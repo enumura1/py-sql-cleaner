@@ -8,11 +8,53 @@
   --ifm-color-primary-lightest: #6f86d8;
   --ifm-code-font-size: 95%;
   --ifm-font-family-base: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --pyredsql-hero-bg-start: #f8fafc;
+  --pyredsql-hero-bg-end: #edf2ff;
+  --pyredsql-hero-accent: rgb(54 84 184 / 12%);
+  --pyredsql-section-bg: #ffffff;
+  --pyredsql-card-bg: #ffffff;
+  --pyredsql-border: #d9e0ea;
+  --pyredsql-card-shadow: rgb(15 23 42 / 6%);
+  --pyredsql-shadow: rgb(15 23 42 / 18%);
+  --pyredsql-text-strong: #111827;
+  --pyredsql-text-muted: #536171;
+  --pyredsql-accent-strong: #3654b8;
+  --pyredsql-step-bg: #e9eeff;
+  --pyredsql-step-text: #263f9b;
+  --pyredsql-code-panel: #101826;
+  --pyredsql-code-block: #172235;
+  --pyredsql-code-border: rgb(255 255 255 / 8%);
+  --pyredsql-code-text: #e7edf7;
+  --pyredsql-code-muted: #9fb0c8;
+  --pyredsql-command-bg: #f3f6fb;
+  --pyredsql-command-text: #243044;
 }
 
 [data-theme='dark'] {
   --ifm-color-primary: #8fa6ff;
   --ifm-background-color: #111827;
+  --ifm-navbar-background-color: #0f172a;
+  --ifm-footer-background-color: #0b1120;
+  --pyredsql-hero-bg-start: #0f172a;
+  --pyredsql-hero-bg-end: #111827;
+  --pyredsql-hero-accent: rgb(143 166 255 / 16%);
+  --pyredsql-section-bg: #111827;
+  --pyredsql-card-bg: #162033;
+  --pyredsql-border: #2a3750;
+  --pyredsql-card-shadow: rgb(0 0 0 / 22%);
+  --pyredsql-shadow: rgb(0 0 0 / 30%);
+  --pyredsql-text-strong: #f8fafc;
+  --pyredsql-text-muted: #bac6d8;
+  --pyredsql-accent-strong: #9fb3ff;
+  --pyredsql-step-bg: #263a73;
+  --pyredsql-step-text: #dbe5ff;
+  --pyredsql-code-panel: #0b1120;
+  --pyredsql-code-block: #111b2e;
+  --pyredsql-code-border: #25314a;
+  --pyredsql-code-text: #e7edf7;
+  --pyredsql-code-muted: #a8b5c7;
+  --pyredsql-command-bg: #0f172a;
+  --pyredsql-command-text: #dce6f6;
 }
 
 .theme-doc-markdown h1 {

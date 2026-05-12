@@ -1,6 +1,8 @@
 .hero {
   padding: 5rem 0 4rem;
-  background: #f7f8fb;
+  background:
+    radial-gradient(circle at 12% 20%, var(--pyredsql-hero-accent), transparent 32%),
+    linear-gradient(135deg, var(--pyredsql-hero-bg-start), var(--pyredsql-hero-bg-end));
 }
 
 .heroGrid {
@@ -16,13 +18,14 @@
 
 .eyebrow {
   margin-bottom: 0.75rem;
-  color: #4458a8;
+  color: var(--pyredsql-accent-strong);
   font-weight: 700;
   text-transform: uppercase;
   font-size: 0.8rem;
 }
 
 .heroTitle {
+  color: var(--pyredsql-text-strong);
   font-size: 3.1rem;
   line-height: 1.05;
   margin-bottom: 1rem;
@@ -31,7 +34,7 @@
 .heroSubtitle {
   font-size: 1.2rem;
   line-height: 1.6;
-  color: #46515f;
+  color: var(--pyredsql-text-muted);
   margin-bottom: 1.5rem;
 }
 
@@ -42,72 +45,120 @@
 }
 
 .preview {
-  background: #101826;
-  color: #e7edf7;
-  border-radius: 8px;
+  background: var(--pyredsql-code-panel);
+  color: var(--pyredsql-code-text);
+  border: 1px solid var(--pyredsql-code-border);
+  border-radius: 10px;
   padding: 1rem;
-  box-shadow: 0 20px 45px rgb(15 23 42 / 18%);
+  box-shadow: 0 20px 45px var(--pyredsql-shadow);
 }
 
-.previewHeader {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  color: #9fb0c8;
-  font-size: 0.8rem;
-  margin-bottom: 0.75rem;
+.previewTitle {
+  display: grid;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.previewTitle strong {
+  color: var(--pyredsql-code-text);
+  font-size: 1rem;
+}
+
+.previewKicker {
+  color: var(--pyredsql-code-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.previewStep {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.previewStep span {
+  color: var(--pyredsql-code-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .preview pre {
   margin: 0;
   padding: 1rem;
-  border-radius: 6px;
-  background: #172235;
+  border-radius: 8px;
+  background: var(--pyredsql-code-block);
   overflow-x: auto;
   white-space: pre-wrap;
 }
 
-.arrow {
-  text-align: center;
-  color: #9fb0c8;
-  padding: 0.75rem 0;
-  font-size: 1.25rem;
-}
-
 .features {
-  padding: 4rem 0;
+  padding: 4.5rem 0;
+  background: var(--pyredsql-section-bg);
 }
 
 .sectionHeader {
-  max-width: 720px;
-  margin-bottom: 1.5rem;
+  max-width: 780px;
+  margin-bottom: 2rem;
+}
+
+.sectionHeader h2 {
+  color: var(--pyredsql-text-strong);
 }
 
 .sectionHeader p {
-  color: #536171;
+  color: var(--pyredsql-text-muted);
   font-size: 1.05rem;
 }
 
-.cardGrid {
+.featureList {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.card {
-  border: 1px solid #d9e0ea;
-  border-radius: 8px;
-  padding: 1.25rem;
-  background: #fff;
+.featureItem {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(280px, 0.75fr);
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.35rem;
+  border: 1px solid var(--pyredsql-border);
+  border-radius: 12px;
+  background: var(--pyredsql-card-bg);
+  box-shadow: 0 12px 30px var(--pyredsql-card-shadow);
 }
 
-.card h3 {
-  font-size: 1.1rem;
+.stepBadge {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 10px;
+  background: var(--pyredsql-step-bg);
+  color: var(--pyredsql-step-text);
+  font-weight: 800;
 }
 
-.card p {
+.featureBody h3 {
+  color: var(--pyredsql-text-strong);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.featureBody p {
   margin-bottom: 0;
-  color: #536171;
+  color: var(--pyredsql-text-muted);
+  line-height: 1.65;
+}
+
+.command {
+  margin: 0;
+  padding: 0.95rem 1rem;
+  border-radius: 8px;
+  background: var(--pyredsql-command-bg);
+  color: var(--pyredsql-command-text);
+  overflow-x: auto;
+  white-space: pre-wrap;
 }
 
 @media (max-width: 996px) {
@@ -119,7 +170,13 @@
     font-size: 2.35rem;
   }
 
-  .cardGrid {
+  .featureItem {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stepBadge {
+    width: 3rem;
+    height: 3rem;
   }
 }
