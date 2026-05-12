@@ -1,7 +1,16 @@
+---
+sidebar_position: 1
+---
+
 # Safety and Limitations
 
-`pyredsql` is conservative by default. It prefers skipping blocks over rewriting
-SQL that may contain runtime logic.
+`pyredsql` is conservative by default. It skips unsafe blocks instead of
+rewriting them.
+
+:::note
+Skipped blocks are left unchanged. Preserving runtime behavior is more important
+than formatting every SQL-looking string.
+:::
 
 ## Unsafe Blocks
 
@@ -30,38 +39,6 @@ Reasons:
 - f-strings may contain Python expressions
 - Jinja-like templates may be used by Airflow, dbt, or other tools
 - rewriting these strings incorrectly could change runtime behavior
-
-## Supported Input
-
-The current MVP targets Python triple-quoted strings:
-
-```python
-query = """
-SELECT *
-FROM users
-"""
-```
-
-```python
-load_users_sql = '''
-SELECT *
-FROM users
-'''
-```
-
-Single-line strings are not targeted in the MVP:
-
-```python
-query = "SELECT * FROM users"
-```
-
-## Redshift-First
-
-`pyredsql` is designed primarily for Amazon Redshift SQL.
-
-Formatting is powered by SQLGlot internally. `pyredsql` does not aim to be a
-full SQL parser or a replacement for SQLGlot. Its main responsibility is to find
-SQL embedded in Python files and refactor it safely.
 
 ## What pyredsql Does Not Do
 

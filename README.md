@@ -20,6 +20,10 @@ file.
 `pyredsql` is an early MVP. It uses SQLGlot internally for best-effort SQL
 formatting. It does not connect to databases and does not execute SQL.
 
+> [!NOTE]
+> `pyredsql` is conservative by default: f-strings and Jinja-like templates are
+> detected but skipped instead of being rewritten.
+
 ## Features
 
 - Format Redshift SQL embedded in Python triple-quoted strings
@@ -32,6 +36,9 @@ formatting. It does not connect to databases and does not execute SQL.
 - Support `dry-run` mode before rewriting files
 
 ## Installation
+
+`pyredsql` is not published to PyPI yet. PyPI installation will be available
+after the first package release.
 
 ```bash
 pip install pyredsql
@@ -51,35 +58,35 @@ uvx pyredsql --help
 
 ## Quick Start
 
-List embedded SQL blocks:
+1. List embedded SQL blocks:
 
-```bash
-pyredsql list jobs/load_users.py
-```
+   ```bash
+   pyredsql list jobs/load_users.py
+   ```
 
-Preview formatting changes:
+2. Preview formatting changes:
 
-```bash
-pyredsql format jobs/load_users.py --dry-run
-```
+   ```bash
+   pyredsql format jobs/load_users.py --dry-run
+   ```
 
-Format embedded SQL in place:
+3. Format embedded SQL in place:
 
-```bash
-pyredsql format jobs/load_users.py
-```
+   ```bash
+   pyredsql format jobs/load_users.py
+   ```
 
-Extract embedded SQL into `.sql` files:
+4. Extract embedded SQL into `.sql` files:
 
-```bash
-pyredsql extract jobs/load_users.py --out-dir sql
-```
+   ```bash
+   pyredsql extract jobs/load_users.py --out-dir sql
+   ```
 
-Check formatting for CI:
+5. Check formatting for CI:
 
-```bash
-pyredsql check jobs/load_users.py
-```
+   ```bash
+   pyredsql check jobs/load_users.py
+   ```
 
 ## Example
 
@@ -145,6 +152,10 @@ query = "SELECT * FROM users"
 `pyredsql` is conservative by default. It skips unsafe blocks instead of
 rewriting them.
 
+> [!NOTE]
+> Skipped blocks are left unchanged. This is intentional: preserving runtime
+> behavior is more important than formatting every SQL-looking string.
+
 Skipped by default:
 
 ```python
@@ -177,17 +188,18 @@ WHERE ds = '{{ ds }}'
 
 ## Commands
 
-| Command | Purpose |
-| --- | --- |
-| `pyredsql list FILE` | List embedded SQL blocks |
-| `pyredsql format FILE` | Format embedded SQL in place |
-| `pyredsql check FILE` | Check whether embedded SQL is formatted |
-| `pyredsql extract FILE --out-dir sql` | Extract embedded SQL into `.sql` files |
+| Command | Purpose | Example |
+| --- | --- | --- |
+| `list` | List embedded SQL blocks | `pyredsql list jobs/load_users.py` |
+| `format` | Format embedded SQL in place | `pyredsql format jobs/load_users.py` |
+| `check` | Check whether embedded SQL is formatted | `pyredsql check jobs/load_users.py` |
+| `extract` | Extract embedded SQL into `.sql` files | `pyredsql extract jobs/load_users.py --out-dir sql` |
 
 ## Documentation
 
-- [Usage Guide](docs/usage.md)
-- [Safety and Limitations](docs/safety.md)
+- [Documentation site source](website/docs/intro.md)
+- [Usage Guide](website/docs/getting-started/quick-start.md)
+- [Safety and Limitations](website/docs/project/safety.md)
 - [Contributing](CONTRIBUTING.md)
 
 ## Status
