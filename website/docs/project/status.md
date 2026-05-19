@@ -4,13 +4,13 @@ sidebar_position: 2
 
 # Project Status
 
-`pyredsql` is currently an early MVP.
+`py-sql-cleaner` is currently an early MVP.
 
 The current focus is:
 
 - Python files
 - triple-quoted SQL strings
-- Redshift SQL
+- SQLGlot-backed SQL formatting, currently defaulting to the Redshift dialect
 - formatting
 - extracting SQL into `.sql` files
 

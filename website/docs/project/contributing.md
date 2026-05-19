@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # Contributing
 
-`pyredsql` is an early MVP, so small, focused changes are easiest to review.
+`py-sql-cleaner` is an early MVP, so small, focused changes are easiest to review.
 
 ## Development Setup
 

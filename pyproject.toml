@@ -1,7 +1,7 @@
 [project]
-name = "pyredsql"
+name = "py-sql-cleaner"
 version = "0.1.0"
-description = "Format and extract Redshift SQL embedded in Python files."
+description = "Find, format, and extract SQL embedded in Python files."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
@@ -19,14 +19,26 @@ dependencies = [
 dev = [
     "build>=1.2",
     "pytest>=8",
+    "ruff>=0.8",
     "twine>=6",
 ]
 
 [project.scripts]
-pyredsql = "pyredsql.cli:app"
+py-sql-cleaner = "py_sql_cleaner.cli:app"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/fixtures/**/*.py" = ["F821", "S608"]
+"tests/**/*.py" = ["S101"]
 
 [build-system]
 requires = ["hatchling"]

@@ -29,7 +29,7 @@ Detected variable names include:
 - `*_sql`
 - `*_query`
 
-`pyredsql` also detects SQL-like strings based on keywords such as:
+`py-sql-cleaner` also detects SQL-like strings based on keywords such as:
 
 - `SELECT`
 - `WITH`

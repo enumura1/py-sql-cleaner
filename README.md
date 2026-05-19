@@ -1,10 +1,11 @@
-# pyredsql
+# py-sql-cleaner
 
-`pyredsql` is a Redshift-first CLI tool for formatting and extracting SQL
+`py-sql-cleaner` is a CLI tool for finding, formatting, and extracting SQL
 embedded in Python files.
 
-It is built for Python codebases where long Redshift SQL queries are written
-directly inside triple-quoted Python strings.
+It is built for Python codebases where long SQL queries are written directly
+inside triple-quoted Python strings. The current MVP defaults to the Redshift
+dialect through SQLGlot, with room for broader dialect support over time.
 
 ```python
 query = """
@@ -14,19 +15,19 @@ qualify row_number() over(partition by user_id order by updated_at desc)=1
 """
 ```
 
-`pyredsql` can format that SQL in place, or extract it into an external `.sql`
+`py-sql-cleaner` can format that SQL in place, or extract it into an external `.sql`
 file.
 
-`pyredsql` is an early MVP. It uses SQLGlot internally for best-effort SQL
+`py-sql-cleaner` is an early MVP. It uses SQLGlot internally for best-effort SQL
 formatting. It does not connect to databases and does not execute SQL.
 
 > [!NOTE]
-> `pyredsql` is conservative by default: f-strings and Jinja-like templates are
+> `py-sql-cleaner` is conservative by default: f-strings and Jinja-like templates are
 > detected but skipped instead of being rewritten.
 
 ## Features
 
-- Format Redshift SQL embedded in Python triple-quoted strings
+- Format SQL embedded in Python triple-quoted strings
 - Extract embedded SQL into external `.sql` files
 - Replace embedded SQL strings with file references
 - Detect common SQL variable names such as `sql`, `query`, `*_sql`, and
@@ -37,23 +38,23 @@ formatting. It does not connect to databases and does not execute SQL.
 
 ## Installation
 
-`pyredsql` is not published to PyPI yet. PyPI installation will be available
+`py-sql-cleaner` is not published to PyPI yet. PyPI installation will be available
 after the first package release.
 
 ```bash
-pip install pyredsql
+pip install py-sql-cleaner
 ```
 
 Or install it as an isolated CLI tool:
 
 ```bash
-pipx install pyredsql
+pipx install py-sql-cleaner
 ```
 
 You can also run it without installing:
 
 ```bash
-uvx pyredsql --help
+uvx py-sql-cleaner --help
 ```
 
 ## Quick Start
@@ -61,31 +62,31 @@ uvx pyredsql --help
 1. List embedded SQL blocks:
 
    ```bash
-   pyredsql list jobs/load_users.py
+   py-sql-cleaner list jobs/load_users.py
    ```
 
 2. Preview formatting changes:
 
    ```bash
-   pyredsql format jobs/load_users.py --dry-run
+   py-sql-cleaner format jobs/load_users.py --dry-run
    ```
 
 3. Format embedded SQL in place:
 
    ```bash
-   pyredsql format jobs/load_users.py
+   py-sql-cleaner format jobs/load_users.py
    ```
 
 4. Extract embedded SQL into `.sql` files:
 
    ```bash
-   pyredsql extract jobs/load_users.py --out-dir sql
+   py-sql-cleaner extract jobs/load_users.py --out-dir sql
    ```
 
 5. Check formatting for CI:
 
    ```bash
-   pyredsql check jobs/load_users.py
+   py-sql-cleaner check jobs/load_users.py
    ```
 
 ## Example
@@ -100,7 +101,7 @@ qualify row_number() over(partition by user_id order by updated_at desc)=1
 """
 ```
 
-After `pyredsql format jobs/load_users.py`:
+After `py-sql-cleaner format jobs/load_users.py`:
 
 ```python
 query = """
@@ -115,7 +116,7 @@ QUALIFY
 
 Exact formatting is produced by SQLGlot and may change as SQLGlot changes.
 
-After `pyredsql extract jobs/load_users.py --out-dir sql`:
+After `py-sql-cleaner extract jobs/load_users.py --out-dir sql`:
 
 ```python
 query = "sql/query.sql"
@@ -149,7 +150,7 @@ query = "SELECT * FROM users"
 
 ## Safety
 
-`pyredsql` is conservative by default. It skips unsafe blocks instead of
+`py-sql-cleaner` is conservative by default. It skips unsafe blocks instead of
 rewriting them.
 
 > [!NOTE]
@@ -174,14 +175,14 @@ WHERE ds = '{{ ds }}'
 """
 ```
 
-`pyredsql` does not:
+`py-sql-cleaner` does not:
 
-- connect to Redshift
+- connect to databases
 - execute SQL
 - validate SQL against a database
 - inspect schemas
 - provide autocomplete
-- guarantee full Redshift compatibility
+- guarantee full database compatibility
 - fully support f-strings
 - fully support Jinja templates
 - format every possible SQL string
@@ -190,10 +191,10 @@ WHERE ds = '{{ ds }}'
 
 | Command | Purpose | Example |
 | --- | --- | --- |
-| `list` | List embedded SQL blocks | `pyredsql list jobs/load_users.py` |
-| `format` | Format embedded SQL in place | `pyredsql format jobs/load_users.py` |
-| `check` | Check whether embedded SQL is formatted | `pyredsql check jobs/load_users.py` |
-| `extract` | Extract embedded SQL into `.sql` files | `pyredsql extract jobs/load_users.py --out-dir sql` |
+| `list` | List embedded SQL blocks | `py-sql-cleaner list jobs/load_users.py` |
+| `format` | Format embedded SQL in place | `py-sql-cleaner format jobs/load_users.py` |
+| `check` | Check whether embedded SQL is formatted | `py-sql-cleaner check jobs/load_users.py` |
+| `extract` | Extract embedded SQL into `.sql` files | `py-sql-cleaner extract jobs/load_users.py --out-dir sql` |
 
 ## Documentation
 
@@ -204,13 +205,13 @@ WHERE ds = '{{ ds }}'
 
 ## Status
 
-`pyredsql` is currently an early MVP.
+`py-sql-cleaner` is currently an early MVP.
 
 The current focus is:
 
 - Python files
 - triple-quoted SQL strings
-- Redshift SQL
+- SQLGlot-backed SQL formatting, currently defaulting to the Redshift dialect
 - formatting
 - extracting SQL into `.sql` files
 

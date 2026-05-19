@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pyredsql.models import SqlBlock
+from py_sql_cleaner.models import SqlBlock
 
 
 def build_sql_file_name(block: SqlBlock, source_file: Path) -> str:

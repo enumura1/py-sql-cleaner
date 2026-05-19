@@ -4,21 +4,21 @@ sidebar_position: 1
 
 # Installation
 
-`pyredsql` is not published to PyPI yet. PyPI installation will be available
+`py-sql-cleaner` is not published to PyPI yet. PyPI installation will be available
 after the first package release.
 
 ```bash
-pip install pyredsql
+pip install py-sql-cleaner
 ```
 
 After release, it can also be installed as an isolated CLI tool:
 
 ```bash
-pipx install pyredsql
+pipx install py-sql-cleaner
 ```
 
 Or run without installing:
 
 ```bash
-uvx pyredsql --help
+uvx py-sql-cleaner --help
 ```

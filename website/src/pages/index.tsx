@@ -144,13 +144,13 @@ function HomepageHeader() {
       <div className="container">
         <div className={styles.heroGrid}>
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>Redshift-first Python SQL refactoring</p>
+            <p className={styles.eyebrow}>Python embedded SQL cleanup</p>
             <Heading as="h1" className={styles.heroTitle}>
-              pyredsql
+              py-sql-cleaner
             </Heading>
             <p className={styles.heroSubtitle}>
-              Format, audit, and extract long triple-quoted Redshift SQL strings
-              from Python into readable, reviewable SQL files.
+              Find, format, and extract long triple-quoted SQL strings from
+              Python into readable, reviewable SQL files.
             </p>
             <div className={styles.actions}>
               <Link className="button button--primary button--lg" to="/docs/intro">
@@ -161,7 +161,7 @@ function HomepageHeader() {
               </Link>
             </div>
           </div>
-          <div className={styles.preview} aria-label="pyredsql example">
+          <div className={styles.preview} aria-label="py-sql-cleaner example">
             <div className={styles.previewTitle}>
               <span className={styles.previewKicker}>Example workflow</span>
               <strong>Extract embedded SQL from Python</strong>
@@ -173,7 +173,7 @@ function HomepageHeader() {
             </div>
             <div className={styles.previewStep}>
               <span>Run</span>
-              <PromptLine>pyredsql extract jobs/load_users.py --out-dir sql</PromptLine>
+              <PromptLine>py-sql-cleaner extract jobs/load_users.py --out-dir sql</PromptLine>
             </div>
             <div className={styles.previewStep}>
               <span>After</span>
@@ -251,8 +251,8 @@ const extractNotes = [
 function TerminalListPreview() {
   return (
     <div className={styles.terminalPreview}>
-      <PromptLine>pyredsql list jobs/</PromptLine>
-      <div className={styles.resultTable} role="table" aria-label="pyredsql list output">
+      <PromptLine>py-sql-cleaner list jobs/</PromptLine>
+      <div className={styles.resultTable} role="table" aria-label="py-sql-cleaner list output">
         {listRows.map((row) => (
           <div className={styles.resultRow} role="row" key={`${row.file}-${row.name}`}>
             <code className={styles.resultFile}>{row.file}</code>
@@ -348,8 +348,8 @@ function FeatureList() {
     {
       step: '01',
       title: 'Find embedded SQL',
-      body: 'Scan Python files for triple-quoted strings that look like SQL. pyredsql combines SQL-like keywords with common variable names such as query, sql, *_query, and *_sql, and reports which blocks are safe to act on and which are skipped.',
-      command: 'pyredsql list jobs/',
+      body: 'Scan Python files for triple-quoted strings that look like SQL. py-sql-cleaner combines SQL-like keywords with common variable names such as query, sql, *_query, and *_sql, and reports which blocks are safe to act on and which are skipped.',
+      command: 'py-sql-cleaner list jobs/',
       previewLabel: 'Example output',
       preview: (
         <TerminalListPreview />
@@ -358,8 +358,8 @@ function FeatureList() {
     {
       step: '02',
       title: 'Format safely',
-      body: 'Re-format Redshift SQL through SQLGlot while keeping runtime-sensitive strings untouched. f-strings and Jinja-like templates are detected, reported, and skipped by default. Use --dry-run to preview, or --check in CI.',
-      command: 'pyredsql format jobs/load_users.py --dry-run',
+      body: 'Re-format embedded SQL through SQLGlot while keeping runtime-sensitive strings untouched. f-strings and Jinja-like templates are detected, reported, and skipped by default. Use --dry-run to preview, or --check in CI.',
+      command: 'py-sql-cleaner format jobs/load_users.py --dry-run',
       previewLabel: 'Before → After',
       preview: (
         <BeforeAfterPreview
@@ -385,7 +385,7 @@ function FeatureList() {
       step: '03',
       title: 'Extract to .sql',
       body: 'Move large embedded queries into external .sql files. The Python side is replaced with a path string (or a Path(...).read_text() call when that fits), and the formatted SQL lives in a real, reviewable file.',
-      command: 'pyredsql extract jobs/load_users.py --out-dir sql',
+      command: 'py-sql-cleaner extract jobs/load_users.py --out-dir sql',
       previewLabel: 'Before → After',
       preview: (
         <BeforeAfterPreview
@@ -420,7 +420,7 @@ function FeatureList() {
       <div className="container">
         <div className={styles.sectionHeader}>
           <Heading as="h2">Built for practical cleanup work</Heading>
-          <p>pyredsql is a refactoring tool, not a database client. It never connects to Redshift or executes SQL. Each command shows you exactly what it will change — before it changes anything.</p>
+          <p>py-sql-cleaner is a cleanup tool, not a database client. It never connects to databases or executes SQL. Each command shows you exactly what it will change — before it changes anything.</p>
         </div>
         <div className={styles.featureList}>
           {items.map((item) => (
@@ -451,8 +451,8 @@ function FeatureList() {
 export default function Home(): JSX.Element {
   return (
     <Layout
-      title="pyredsql"
-      description="Format and extract Redshift SQL embedded in Python files.">
+      title="py-sql-cleaner"
+      description="Find, format, and extract SQL embedded in Python files.">
       <HomepageHeader />
       <FeatureList />
     </Layout>

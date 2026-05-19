@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Safety and Limitations
 
-`pyredsql` is conservative by default. It skips unsafe blocks instead of
+`py-sql-cleaner` is conservative by default. It skips unsafe blocks instead of
 rewriting them.
 
 :::note
@@ -40,16 +40,16 @@ Reasons:
 - Jinja-like templates may be used by Airflow, dbt, or other tools
 - rewriting these strings incorrectly could change runtime behavior
 
-## What pyredsql Does Not Do
+## What py-sql-cleaner Does Not Do
 
-`pyredsql` does not:
+`py-sql-cleaner` does not:
 
-- connect to Redshift
+- connect to databases
 - execute SQL
 - validate SQL against a database
 - inspect schemas
 - provide autocomplete
-- guarantee full Redshift compatibility
+- guarantee full database compatibility
 - fully support f-strings
 - fully support Jinja templates
 - format every possible SQL string

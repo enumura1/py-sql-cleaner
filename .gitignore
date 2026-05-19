@@ -15,4 +15,5 @@ dist/
 build/
 .env
 .env.*
+.claude/
 .DS_Store

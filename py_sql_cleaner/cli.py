@@ -7,12 +7,12 @@ from typing import Annotated
 import typer
 from rich.console import Console
 
-from pyredsql.detector import detect_sql_blocks
-from pyredsql.errors import FormatterError
-from pyredsql.extractor import build_sql_file_name, write_sql_file_at_path
-from pyredsql.formatter import format_sql
-from pyredsql.models import SqlBlock
-from pyredsql.rewriter import replace_sql_block_with_reference, replace_sql_content
+from py_sql_cleaner.detector import detect_sql_blocks
+from py_sql_cleaner.errors import FormatterError
+from py_sql_cleaner.extractor import build_sql_file_name, write_sql_file_at_path
+from py_sql_cleaner.formatter import format_sql
+from py_sql_cleaner.models import SqlBlock
+from py_sql_cleaner.rewriter import replace_sql_block_with_reference, replace_sql_content
 
 app = typer.Typer(no_args_is_help=True)
 console = Console()

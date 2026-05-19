@@ -1,6 +1,6 @@
 from typer.testing import CliRunner
 
-from pyredsql.cli import app
+from py_sql_cleaner.cli import app
 
 runner = CliRunner()
 

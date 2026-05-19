@@ -2,15 +2,15 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'pyredsql',
-  tagline: 'Format and extract Redshift SQL embedded in Python files.',
+  title: 'py-sql-cleaner',
+  tagline: 'Find, format, and extract SQL embedded in Python files.',
   favicon: 'img/favicon.svg',
 
   url: 'https://enumura1.github.io',
-  baseUrl: '/pyredsql/',
+  baseUrl: '/py-sql-cleaner/',
 
   organizationName: 'enumura1',
-  projectName: 'pyredsql',
+  projectName: 'py-sql-cleaner',
 
   onBrokenLinks: 'throw',
   markdown: {
@@ -30,7 +30,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/enumura1/pyredsql/tree/main/website/',
+          editUrl: 'https://github.com/enumura1/py-sql-cleaner/tree/main/website/',
         },
         blog: false,
         theme: {
@@ -43,9 +43,9 @@ const config: Config = {
   themeConfig: {
     image: 'img/social-card.svg',
     navbar: {
-      title: 'pyredsql',
+      title: 'py-sql-cleaner',
       logo: {
-        alt: 'pyredsql logo',
+        alt: 'py-sql-cleaner logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -56,7 +56,7 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          href: 'https://github.com/enumura1/pyredsql',
+          href: 'https://github.com/enumura1/py-sql-cleaner',
           label: 'GitHub',
           position: 'right',
         },
@@ -87,11 +87,11 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/enumura1/pyredsql',
+              href: 'https://github.com/enumura1/py-sql-cleaner',
             },
             {
               label: 'Issues',
-              href: 'https://github.com/enumura1/pyredsql/issues',
+              href: 'https://github.com/enumura1/py-sql-cleaner/issues',
             },
           ],
         },

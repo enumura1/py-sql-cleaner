@@ -6,7 +6,7 @@ import tokenize
 from pathlib import Path
 from tokenize import TokenInfo
 
-from pyredsql.models import SqlBlock
+from py_sql_cleaner.models import SqlBlock
 
 SQL_KEYWORDS = (
     "SELECT",

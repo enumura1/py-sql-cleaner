@@ -1,7 +1,7 @@
 import pytest
 
-from pyredsql.errors import FormatterError
-from pyredsql.formatter import format_sql
+from py_sql_cleaner.errors import FormatterError
+from py_sql_cleaner.formatter import format_sql
 
 
 def test_formats_with_clause() -> None:

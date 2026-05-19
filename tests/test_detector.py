@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pyredsql.detector import detect_sql_blocks
+from py_sql_cleaner.detector import detect_sql_blocks
 
 
 def test_detects_triple_quoted_query_assignment() -> None:

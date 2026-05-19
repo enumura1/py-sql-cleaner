@@ -1,8 +1,8 @@
 # Contributing
 
-Thanks for your interest in contributing to `pyredsql`.
+Thanks for your interest in contributing to `py-sql-cleaner`.
 
-`pyredsql` is an early MVP, so small, focused changes are easiest to review.
+`py-sql-cleaner` is an early MVP, so small, focused changes are easiest to review.
 
 ## Development Setup
 
@@ -15,6 +15,12 @@ Run tests:
 
 ```bash
 .venv/bin/python -m pytest
+```
+
+Run lint checks:
+
+```bash
+.venv/bin/python -m ruff check .
 ```
 
 Build the package:
@@ -45,7 +51,7 @@ The current focus is:
 
 - Python files
 - triple-quoted SQL strings
-- Redshift SQL
+- SQLGlot-backed SQL formatting, currently defaulting to the Redshift dialect
 - formatting
 - extracting SQL into `.sql` files
 

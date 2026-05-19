@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 import sqlglot
 
-from pyredsql.errors import FormatterError
+from py_sql_cleaner.errors import FormatterError
 
 
 class FormatterBackend(ABC):

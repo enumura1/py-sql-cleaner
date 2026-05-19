@@ -7,7 +7,7 @@ sidebar_position: 2
 ## 1. List Embedded SQL Blocks
 
 ```bash
-pyredsql list jobs/load_users.py
+py-sql-cleaner list jobs/load_users.py
 ```
 
 Example output:
@@ -24,13 +24,13 @@ Found 1 SQL blocks
 ## 2. Preview Formatting Changes
 
 ```bash
-pyredsql format jobs/load_users.py --dry-run
+py-sql-cleaner format jobs/load_users.py --dry-run
 ```
 
 ## 3. Format Embedded SQL
 
 ```bash
-pyredsql format jobs/load_users.py
+py-sql-cleaner format jobs/load_users.py
 ```
 
 Before:
@@ -61,7 +61,7 @@ Exact formatting is produced by SQLGlot and may change as SQLGlot changes.
 ## 4. Extract SQL
 
 ```bash
-pyredsql extract jobs/load_users.py --out-dir sql
+py-sql-cleaner extract jobs/load_users.py --out-dir sql
 ```
 
 After extraction:
@@ -73,8 +73,8 @@ query = "sql/query.sql"
 ## 5. Check Formatting in CI
 
 ```bash
-pyredsql check jobs/load_users.py
+py-sql-cleaner check jobs/load_users.py
 ```
 
-If embedded SQL is not formatted, `pyredsql check` exits with a non-zero status
+If embedded SQL is not formatted, `py-sql-cleaner check` exits with a non-zero status
 code.

@@ -6,45 +6,45 @@ sidebar_position: 1
 
 | Command | Purpose | Example |
 | --- | --- | --- |
-| `list` | List embedded SQL blocks | `pyredsql list jobs/load_users.py` |
-| `format` | Format embedded SQL in place | `pyredsql format jobs/load_users.py` |
-| `check` | Check whether embedded SQL is formatted | `pyredsql check jobs/load_users.py` |
-| `extract` | Extract embedded SQL into `.sql` files | `pyredsql extract jobs/load_users.py --out-dir sql` |
+| `list` | List embedded SQL blocks | `py-sql-cleaner list jobs/load_users.py` |
+| `format` | Format embedded SQL in place | `py-sql-cleaner format jobs/load_users.py` |
+| `check` | Check whether embedded SQL is formatted | `py-sql-cleaner check jobs/load_users.py` |
+| `extract` | Extract embedded SQL into `.sql` files | `py-sql-cleaner extract jobs/load_users.py --out-dir sql` |
 
 ## `list`
 
 ```bash
-pyredsql list path/to/file.py
+py-sql-cleaner list path/to/file.py
 ```
 
 ## `format`
 
 ```bash
-pyredsql format path/to/file.py
+py-sql-cleaner format path/to/file.py
 ```
 
 Preview changes:
 
 ```bash
-pyredsql format path/to/file.py --dry-run
+py-sql-cleaner format path/to/file.py --dry-run
 ```
 
 ## `check`
 
 ```bash
-pyredsql check path/to/file.py
+py-sql-cleaner check path/to/file.py
 ```
 
 ## `extract`
 
 ```bash
-pyredsql extract path/to/file.py --out-dir sql
+py-sql-cleaner extract path/to/file.py --out-dir sql
 ```
 
 Use `read-text` replacement mode:
 
 ```bash
-pyredsql extract path/to/file.py --out-dir sql --replace-mode read-text
+py-sql-cleaner extract path/to/file.py --out-dir sql --replace-mode read-text
 ```
 
 Result:
@@ -54,12 +54,12 @@ query = Path("sql/query.sql").read_text()
 ```
 
 :::note
-`pyredsql` does not automatically insert `from pathlib import Path` in the
+`py-sql-cleaner` does not automatically insert `from pathlib import Path` in the
 current MVP.
 :::
 
 Specify an output name:
 
 ```bash
-pyredsql extract path/to/file.py --out-dir sql --name load_users
+py-sql-cleaner extract path/to/file.py --out-dir sql --name load_users
 ```
