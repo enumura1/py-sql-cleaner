@@ -80,7 +80,5 @@ select * from events
     assert (tmp_path / "sql" / "query.sql").exists()
     assert (tmp_path / "sql" / "query_2.sql").exists()
     assert file.read_text(encoding="utf-8") == (
-        'query = "sql/query.sql"\n'
-        "\n"
-        'query = "sql/query_2.sql"\n'
+        'query = "sql/query.sql"\n\nquery = "sql/query_2.sql"\n'
     )

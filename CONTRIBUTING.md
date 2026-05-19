@@ -17,10 +17,18 @@ Run tests:
 .venv/bin/python -m pytest
 ```
 
-Run lint checks:
+Run the full local harness:
 
 ```bash
+scripts/check
+```
+
+Run individual lint checks:
+
+```bash
+.venv/bin/python -m ruff format --check .
 .venv/bin/python -m ruff check .
+.venv/bin/lint-imports
 ```
 
 Build the package:
@@ -39,11 +47,23 @@ Check built distributions:
 
 - Keep changes focused.
 - Add or update tests for behavior changes.
+- Keep package dependencies flowing in the direction documented in
+  `docs/architecture/README.md`.
 - Do not include real production SQL, database hostnames, S3 paths, IAM role
   ARNs, API keys, tokens, passwords, or customer data in tests or fixtures.
 - Prefer placeholder values such as `<s3-path>` and `<iam-role-arn>` in examples.
 - Keep SQLGlot usage isolated behind the formatter backend.
 - Preserve the default safety behavior for f-strings and Jinja-like templates.
+
+## Pre-push Hook
+
+Enable the repository hook once:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+The pre-push hook runs `scripts/check`, matching the local harness and CI.
 
 ## Scope
 

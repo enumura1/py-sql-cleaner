@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 import sqlglot
 
-from py_sql_cleaner.errors import FormatterError
+from py_sql_cleaner.domain.errors import FormatterError
 
 
 class FormatterBackend(ABC):
@@ -17,9 +17,7 @@ class SqlglotFormatter(FormatterBackend):
     def format(self, sql: str, dialect: str) -> str:
         try:
             expressions = sqlglot.parse(sql, read=dialect)
-            formatted = ";\n\n".join(
-                expr.sql(dialect=dialect, pretty=True) for expr in expressions
-            )
+            formatted = ";\n\n".join(expr.sql(dialect=dialect, pretty=True) for expr in expressions)
         except Exception as exc:
             raise FormatterError(str(exc)) from exc
 

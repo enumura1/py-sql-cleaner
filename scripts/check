@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+.venv/bin/python -m ruff format --check .
+.venv/bin/python -m ruff check .
+.venv/bin/lint-imports
+.venv/bin/python -m pytest
+
+if [ -f website/package.json ]; then
+  (cd website && npm run build)
+fi
+
+.venv/bin/python -m build
+.venv/bin/python -m twine check dist/*

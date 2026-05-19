@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from py_sql_cleaner.models import SqlBlock
+from py_sql_cleaner.domain.models import SqlBlock
 
 
 def replace_sql_content(source: str, block: SqlBlock, new_sql: str) -> str:

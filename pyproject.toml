@@ -18,13 +18,14 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "build>=1.2",
+    "import-linter>=2",
     "pytest>=8",
     "ruff>=0.8",
     "twine>=6",
 ]
 
 [project.scripts]
-py-sql-cleaner = "py_sql_cleaner.cli:app"
+py-sql-cleaner = "py_sql_cleaner.cli.app:app"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -39,6 +40,68 @@ select = ["E", "F", "I", "UP", "B", "S"]
 [tool.ruff.lint.per-file-ignores]
 "tests/fixtures/**/*.py" = ["F821", "S608"]
 "tests/**/*.py" = ["S101"]
+
+[tool.importlinter]
+root_package = "py_sql_cleaner"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Layered architecture"
+type = "layers"
+layers = [
+    "py_sql_cleaner.cli",
+    "py_sql_cleaner.application",
+    "py_sql_cleaner.adapters",
+    "py_sql_cleaner.core",
+    "py_sql_cleaner.domain",
+]
+
+[[tool.importlinter.contracts]]
+name = "Domain is independent"
+type = "forbidden"
+source_modules = ["py_sql_cleaner.domain"]
+forbidden_modules = [
+    "py_sql_cleaner.cli",
+    "py_sql_cleaner.application",
+    "py_sql_cleaner.adapters",
+    "py_sql_cleaner.core",
+    "typer",
+    "rich",
+    "sqlglot",
+]
+
+[[tool.importlinter.contracts]]
+name = "Application receives adapters through ports"
+type = "forbidden"
+source_modules = ["py_sql_cleaner.application"]
+forbidden_modules = [
+    "py_sql_cleaner.adapters",
+    "typer",
+    "rich",
+    "sqlglot",
+]
+
+[[tool.importlinter.contracts]]
+name = "Adapters do not depend on use cases"
+type = "forbidden"
+source_modules = ["py_sql_cleaner.adapters"]
+forbidden_modules = [
+    "py_sql_cleaner.cli",
+    "py_sql_cleaner.application",
+    "py_sql_cleaner.core",
+    "typer",
+    "rich",
+]
+
+[[tool.importlinter.contracts]]
+name = "Core is CLI independent"
+type = "forbidden"
+source_modules = ["py_sql_cleaner.core"]
+forbidden_modules = [
+    "py_sql_cleaner.cli",
+    "typer",
+    "rich",
+]
 
 [build-system]
 requires = ["hatchling"]
