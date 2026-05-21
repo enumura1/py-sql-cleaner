@@ -7,11 +7,17 @@
   --ifm-color-primary-lighter: #516ccd;
   --ifm-color-primary-lightest: #6f86d8;
   --ifm-code-font-size: 95%;
-  --ifm-font-family-base: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ifm-font-family-base: "Noto Sans JP", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --ifm-font-family-monospace: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --py-sql-cleaner-font-display: "Noto Sans JP", ui-sans-serif, system-ui, sans-serif;
+  --py-sql-cleaner-grid-dot: rgb(15 23 42 / 9%);
   --py-sql-cleaner-hero-bg-start: #f8fafc;
-  --py-sql-cleaner-hero-bg-end: #edf2ff;
-  --py-sql-cleaner-hero-accent: rgb(54 84 184 / 12%);
-  --py-sql-cleaner-section-bg: #ffffff;
+  --py-sql-cleaner-hero-bg-mid: #eef7f4;
+  --py-sql-cleaner-hero-bg-end: #eef2ff;
+  --py-sql-cleaner-hero-accent: rgb(20 184 166 / 12%);
+  --py-sql-cleaner-section-bg: #f7fafc;
+  --py-sql-cleaner-band-bg: #ffffff;
+  --py-sql-cleaner-band-alt: #f0f6ff;
   --py-sql-cleaner-card-bg: #ffffff;
   --py-sql-cleaner-border: #d9e0ea;
   --py-sql-cleaner-card-shadow: rgb(15 23 42 / 6%);
@@ -19,8 +25,8 @@
   --py-sql-cleaner-text-strong: #111827;
   --py-sql-cleaner-text-muted: #536171;
   --py-sql-cleaner-accent-strong: #3654b8;
-  --py-sql-cleaner-step-bg: #e9eeff;
-  --py-sql-cleaner-step-text: #263f9b;
+  --py-sql-cleaner-step-bg: #dff7ef;
+  --py-sql-cleaner-step-text: #0f766e;
   --py-sql-cleaner-code-panel: #101826;
   --py-sql-cleaner-code-block: #172235;
   --py-sql-cleaner-code-border: rgb(255 255 255 / 8%);
@@ -46,6 +52,7 @@
   --py-sql-cleaner-command-border: #d9e0ea;
   --py-sql-cleaner-command-text: #243044;
   --py-sql-cleaner-command-label: #617087;
+  --py-sql-cleaner-detail-border: #dfe6ef;
 }
 
 [data-theme='dark'] {
@@ -54,9 +61,12 @@
   --ifm-navbar-background-color: #0f172a;
   --ifm-footer-background-color: #0b1120;
   --py-sql-cleaner-hero-bg-start: #0f172a;
-  --py-sql-cleaner-hero-bg-end: #111827;
-  --py-sql-cleaner-hero-accent: rgb(143 166 255 / 16%);
-  --py-sql-cleaner-section-bg: #111827;
+  --py-sql-cleaner-hero-bg-mid: #10211f;
+  --py-sql-cleaner-hero-bg-end: #121a2c;
+  --py-sql-cleaner-hero-accent: rgb(45 212 191 / 12%);
+  --py-sql-cleaner-section-bg: #0f172a;
+  --py-sql-cleaner-band-bg: #111827;
+  --py-sql-cleaner-band-alt: #0f1b2d;
   --py-sql-cleaner-card-bg: #162033;
   --py-sql-cleaner-border: #2a3750;
   --py-sql-cleaner-card-shadow: rgb(0 0 0 / 22%);
@@ -91,6 +101,8 @@
   --py-sql-cleaner-command-border: #25314a;
   --py-sql-cleaner-command-text: #dce6f6;
   --py-sql-cleaner-command-label: #91a2bb;
+  --py-sql-cleaner-detail-border: #263650;
+  --py-sql-cleaner-grid-dot: rgb(255 255 255 / 6%);
 }
 
 .theme-doc-markdown h1 {

@@ -1,26 +1,41 @@
 import Link from '@docusaurus/Link';
-import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
-import type {ReactNode} from 'react';
+import Layout from '@theme/Layout';
+import type {JSX, ReactNode} from 'react';
 import styles from './index.module.css';
-
-const exampleBefore = `query = """
-select user_id, updated_at
-from users
-qualify row_number() over(partition by user_id order by updated_at desc)=1
-"""`;
-
-const exampleAfter = `query = "sql/query.sql"`;
 
 type CodeLanguage = 'python' | 'sql';
 
+const heroBefore = `query = """
+select user_id, sum(amount)
+from analytics.orders
+where status='paid'
+"""`;
+
+const heroPythonAfter = `query = "sql/paid_users.sql"`;
+
+const heroSqlAfter = `SELECT
+  user_id,
+  SUM(amount)
+FROM analytics.orders
+WHERE status = 'paid'
+GROUP BY user_id`;
+
 const sqlKeywords = new Set([
+  'AND',
   'AS',
   'BY',
+  'COUNT',
+  'CURRENT_DATE',
+  'DATEADD',
+  'DAY',
   'DESC',
   'FROM',
   'GROUP',
+  'HAVING',
+  'JOIN',
   'LIMIT',
+  'ON',
   'ORDER',
   'OVER',
   'PARTITION',
@@ -47,7 +62,15 @@ function tokenize(
     }
 
     const className = getClassName(token);
-    pieces.push(className ? <span className={className} key={`${offset}-${token}`}>{token}</span> : token);
+    pieces.push(
+      className ? (
+        <span className={className} key={`${offset}-${token}`}>
+          {token}
+        </span>
+      ) : (
+        token
+      ),
+    );
     lastIndex = offset + token.length;
     return token;
   });
@@ -80,20 +103,24 @@ function highlightPythonLine(line: string, inSqlString: boolean) {
 
   return tokenize(
     line,
-    /#.*$|"""|"[^"]*"|'[^']*'|\bquery\b|[=()]/g,
+    /#.*$|"""|"[^"]*"|'[^']*'|\b(users_query|sessions_query|query)\b|[=()]/g,
     (token) => {
       if (token.startsWith('#')) return styles.codeComment;
-      if (token === '"""' || token.startsWith('"') || token.startsWith("'")) return styles.codeString;
-      if (token === 'query') return styles.codeVariable;
+      if (token === '"""' || token.startsWith('"') || token.startsWith("'")) {
+        return styles.codeString;
+      }
+      if (['query', 'users_query', 'sessions_query'].includes(token)) {
+        return styles.codeVariable;
+      }
       if (/^[=()]$/.test(token)) return styles.codeOperator;
       return undefined;
     },
   );
 }
 
-function PromptLine({children}: {children: ReactNode}) {
+function PromptLine({children, className}: {children: ReactNode; className?: string}) {
   return (
-    <div className={styles.promptLine}>
+    <div className={`${styles.promptLine} ${className ?? ''}`}>
       <span aria-hidden="true">$</span>
       <code>{children}</code>
     </div>
@@ -117,9 +144,10 @@ function SyntaxBlock({
           {lines.map((line, index) => {
             const delimiterLine = language === 'python' && line.includes('"""');
             const shouldHighlightAsSql = language === 'sql' || (inSqlString && !delimiterLine);
-            const renderedLine = language === 'sql'
-              ? highlightSqlLine(line)
-              : highlightPythonLine(line, shouldHighlightAsSql);
+            const renderedLine =
+              language === 'sql'
+                ? highlightSqlLine(line)
+                : highlightPythonLine(line, shouldHighlightAsSql);
 
             if (delimiterLine) {
               inSqlString = !inSqlString;
@@ -138,6 +166,18 @@ function SyntaxBlock({
   );
 }
 
+function FileTypeIcon({kind}: {kind: 'python' | 'sql' | 'terminal'}) {
+  return (
+    <span className={`${styles.fileTypeIcon} ${styles[`fileTypeIcon_${kind}`]}`} aria-hidden="true">
+      {kind === 'python' ? 'py' : kind === 'sql' ? 'sql' : '$'}
+    </span>
+  );
+}
+
+function WorkflowConnector() {
+  return <div className={styles.workflowConnector} aria-hidden="true" />;
+}
+
 function HomepageHeader() {
   return (
     <header className={styles.hero}>
@@ -149,36 +189,80 @@ function HomepageHeader() {
               py-sql-cleaner
             </Heading>
             <p className={styles.heroSubtitle}>
-              Find, format, and extract long triple-quoted SQL strings from
-              Python into readable, reviewable SQL files.
+              Clean up Python files that hide SQL in triple-quoted strings. Scan
+              them, format safe queries, or extract long queries into reviewable
+              SQL files.
             </p>
             <div className={styles.actions}>
               <Link className="button button--primary button--lg" to="/docs/intro">
                 Read the docs
               </Link>
-              <Link className="button button--secondary button--lg" to="/docs/getting-started/quick-start">
+              <Link
+                className="button button--secondary button--lg"
+                to="/docs/getting-started/quick-start">
                 Quick start
               </Link>
             </div>
           </div>
-          <div className={styles.preview} aria-label="py-sql-cleaner example">
-            <div className={styles.previewTitle}>
-              <span className={styles.previewKicker}>Example workflow</span>
-              <strong>Extract embedded SQL from Python</strong>
-            </div>
-            <div className={styles.previewStep}>
-              <span>Before</span>
-              <strong>SQL lives inside Python</strong>
-              <SyntaxBlock language="python">{exampleBefore}</SyntaxBlock>
-            </div>
-            <div className={styles.previewStep}>
-              <span>Run</span>
-              <PromptLine>py-sql-cleaner extract jobs/load_users.py --out-dir sql</PromptLine>
-            </div>
-            <div className={styles.previewStep}>
-              <span>After</span>
-              <strong>Python points to the SQL file</strong>
-              <SyntaxBlock language="python">{exampleAfter}</SyntaxBlock>
+          <div className={styles.preview} aria-label="py-sql-cleaner extraction workflow">
+            <div className={styles.workflowTrack}>
+              <div className={styles.workflowNode}>
+                <div className={styles.workflowNodeHeader}>
+                  <FileTypeIcon kind="python" />
+                  <div>
+                    <span>Step 1 &middot; Before</span>
+                    <strong>jobs/load_paid_users.py</strong>
+                  </div>
+                </div>
+                <SyntaxBlock language="python">{heroBefore}</SyntaxBlock>
+              </div>
+              <WorkflowConnector />
+              <div className={`${styles.workflowNode} ${styles.workflowRunNode}`}>
+                <div className={styles.workflowNodeHeader}>
+                  <FileTypeIcon kind="terminal" />
+                  <div>
+                    <span>Step 2 &middot; Run</span>
+                    <strong>extract command</strong>
+                  </div>
+                </div>
+                <div className={styles.runTerminal}>
+                  <div className={styles.runTerminalChrome} aria-hidden="true">
+                    <span />
+                    <span />
+                    <span />
+                    <span className={styles.runTerminalTitle}>terminal</span>
+                  </div>
+                  <PromptLine className={styles.heroPrompt}>
+                    py-sql-cleaner extract jobs/load_paid_users.py --out-dir sql
+                  </PromptLine>
+                </div>
+              </div>
+              <WorkflowConnector />
+              <div className={styles.workflowNode}>
+                <div className={styles.workflowNodeHeader}>
+                  <FileTypeIcon kind="sql" />
+                  <div>
+                    <span>Step 3 &middot; After</span>
+                    <strong>Python reference + new SQL file</strong>
+                  </div>
+                </div>
+                <div className={styles.heroAfterGrid}>
+                  <div className={styles.heroAfterPane}>
+                    <div className={styles.heroAfterPaneLabel}>
+                      <FileTypeIcon kind="python" />
+                      <code>jobs/load_paid_users.py</code>
+                    </div>
+                    <SyntaxBlock language="python">{heroPythonAfter}</SyntaxBlock>
+                  </div>
+                  <div className={styles.heroAfterPane}>
+                    <div className={styles.heroAfterPaneLabel}>
+                      <FileTypeIcon kind="sql" />
+                      <code>sql/paid_users.sql</code>
+                    </div>
+                    <SyntaxBlock language="sql">{heroSqlAfter}</SyntaxBlock>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -195,29 +279,45 @@ const listRows = [
   {file: 'jobs/cohorts.py:29', name: 'cohort_query', lines: '44 lines', status: 'skip', reason: 'jinja'},
 ];
 
+const findExample = `# jobs/load_users.py
+users_query = """
+select user_id, email from analytics.users
+"""
+
+# jobs/sessions.py
+sessions_query = f"""
+select * from sessions where ds = '{run_date}'
+"""`;
+
 const formatBefore = `query = """
-select user_id,sum(amount) as total
-from analytics.orders where
-status='paid' group by 1
-order by 2 desc limit 100
+select u.user_id,u.email,count(o.order_id) as paid_orders,
+sum(o.amount) as revenue
+from analytics.users u join analytics.orders o on o.user_id=u.user_id
+where o.status='paid' and o.created_at>=dateadd(day,-30,current_date)
+group by u.user_id,u.email
+having sum(o.amount)>100
+order by revenue desc limit 50
 """`;
 
 const formatAfter = `query = """
 SELECT
-  user_id,
-  SUM(amount) AS total
-FROM analytics.orders
-WHERE status = 'paid'
-GROUP BY 1
-ORDER BY 2 DESC
-LIMIT 100
+  u.user_id,
+  u.email,
+  COUNT(o.order_id) AS paid_orders,
+  SUM(o.amount) AS revenue
+FROM analytics.users AS u
+JOIN analytics.orders AS o
+  ON o.user_id = u.user_id
+WHERE
+  o.status = 'paid'
+  AND o.created_at >= DATEADD(DAY, -30, CURRENT_DATE)
+GROUP BY
+  u.user_id,
+  u.email
+HAVING SUM(o.amount) > 100
+ORDER BY revenue DESC
+LIMIT 50
 """`;
-
-const formatNotes = [
-  'Uppercase keywords',
-  'Expanded SELECT list',
-  'Normalized WHERE and ORDER BY',
-];
 
 const extractBefore = `# jobs/load_users.py
 query = """
@@ -242,10 +342,64 @@ QUALIFY ROW_NUMBER() OVER (
   ORDER BY updated_at DESC
 ) = 1`;
 
-const extractNotes = [
-  'Python keeps a small reference',
-  'SQL moves into a reviewable file',
-  'Formatting happens during extraction',
+const findDetails = [
+  {
+    title: 'Maps the cleanup surface',
+    body: 'Shows file, variable name, line count, and whether the block is safe to rewrite.',
+  },
+  {
+    title: 'Separates safe from risky',
+    body: 'Plain strings are marked safe. f-strings and Jinja-like templates are visible but skipped.',
+  },
+  {
+    title: 'Read-only by design',
+    body: 'The list command changes nothing, so you can inspect a project before choosing a cleanup command.',
+  },
+];
+
+const formatDetails = [
+  {
+    title: 'Keeps the query in place',
+    body: 'Only the SQL body changes. The Python variable and surrounding code stay where they are.',
+  },
+  {
+    title: 'Preview before writing',
+    body: 'Dry-run shows the diff. Check mode makes the same rule usable in CI.',
+  },
+  {
+    title: 'Protects dynamic SQL',
+    body: 'Runtime-sensitive strings are skipped by default instead of being reformatted blindly.',
+  },
+];
+
+const extractDetails = [
+  {
+    title: 'Shrinks the Python file',
+    body: 'The long string becomes a path reference, so the job code is easier to scan.',
+  },
+  {
+    title: 'Creates a real SQL artifact',
+    body: 'The query gets its own SQL file, with cleaner diffs and normal editor support.',
+  },
+  {
+    title: 'Formats while extracting',
+    body: 'Safe blocks are formatted as they move. Unsafe blocks remain visible but untouched.',
+  },
+];
+
+const introPoints = [
+  {
+    label: 'It does not execute SQL',
+    text: 'The tool only reads and rewrites files. There is no database connection, credential handling, or query execution path.',
+  },
+  {
+    label: 'It starts with inventory',
+    text: 'List shows which embedded queries exist and which ones are safe before any rewrite command runs.',
+  },
+  {
+    label: 'It keeps risky templates visible',
+    text: 'f-strings and Jinja-like SQL are reported as skipped so cleanup work does not hide runtime behavior.',
+  },
 ];
 
 function TerminalListPreview() {
@@ -274,6 +428,26 @@ function TerminalListPreview() {
   );
 }
 
+function DetailList({
+  items,
+}: {
+  items: {
+    title: string;
+    body: string;
+  }[];
+}) {
+  return (
+    <div className={styles.detailList}>
+      {items.map((item) => (
+        <div className={styles.detailItem} key={item.title}>
+          <strong>{item.title}</strong>
+          <p>{item.body}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function CodePane({
   label,
   filename,
@@ -288,7 +462,10 @@ function CodePane({
   return (
     <div className={styles.codePane}>
       <div className={styles.codePaneHeader}>
-        <span>{label}</span>
+        <span className={styles.codePaneLabel}>
+          <FileTypeIcon kind={language} />
+          {label}
+        </span>
         <code>{filename}</code>
       </div>
       <SyntaxBlock language={language}>{children}</SyntaxBlock>
@@ -306,11 +483,11 @@ type CodePaneData = {
 function BeforeAfterPreview({
   beforeBlock,
   afterBlocks,
-  notes,
+  commandLabel,
 }: {
   beforeBlock: CodePaneData;
   afterBlocks: CodePaneData[];
-  notes: string[];
+  commandLabel?: string;
 }) {
   return (
     <div className={styles.beforeAfterPreview}>
@@ -321,7 +498,15 @@ function BeforeAfterPreview({
           language={beforeBlock.language}>
           {beforeBlock.code}
         </CodePane>
-        <div className={styles.previewArrow} aria-hidden="true">→</div>
+        <div className={styles.previewBridge}>
+          {commandLabel ? (
+            <span className={styles.previewBridgeLabel}>
+              <span className={styles.previewBridgePrompt} aria-hidden="true">$</span>
+              {commandLabel}
+            </span>
+          ) : null}
+          <div className={styles.previewArrow} aria-hidden="true">→</div>
+        </div>
         <div className={styles.afterStack}>
           {afterBlocks.map((block) => (
             <CodePane
@@ -334,11 +519,6 @@ function BeforeAfterPreview({
           ))}
         </div>
       </div>
-      <ul className={styles.changeNotes}>
-        {notes.map((note) => (
-          <li key={note}>{note}</li>
-        ))}
-      </ul>
     </div>
   );
 }
@@ -348,47 +528,59 @@ function FeatureList() {
     {
       step: '01',
       title: 'Find embedded SQL',
-      body: 'Scan Python files for triple-quoted strings that look like SQL. py-sql-cleaner combines SQL-like keywords with common variable names such as query, sql, *_query, and *_sql, and reports which blocks are safe to act on and which are skipped.',
+      summary: 'First, get a read-only inventory of SQL hidden in Python files.',
+      body: 'Find triple-quoted strings that look like SQL, then separate safe blocks from dynamic templates before cleanup begins.',
       command: 'py-sql-cleaner list jobs/',
-      previewLabel: 'Example output',
+      previewLabel: 'Input Python and scan result',
+      details: findDetails,
       preview: (
-        <TerminalListPreview />
+        <div className={styles.findPreview}>
+          <CodePane label="Example input" filename="jobs/*.py" language="python">
+            {findExample}
+          </CodePane>
+          <TerminalListPreview />
+        </div>
       ),
     },
     {
       step: '02',
-      title: 'Format safely',
-      body: 'Re-format embedded SQL through SQLGlot while keeping runtime-sensitive strings untouched. f-strings and Jinja-like templates are detected, reported, and skipped by default. Use --dry-run to preview, or --check in CI.',
-      command: 'py-sql-cleaner format jobs/load_users.py --dry-run',
-      previewLabel: 'Before → After',
+      title: 'Format SQL inside Python',
+      summary: 'Clean up embedded SQL without moving it out of the Python file.',
+      body: 'Rewrite only the SQL text inside a Python string. Use it when the query should stay embedded but still needs readable formatting.',
+      command: 'py-sql-cleaner format jobs/load_paid_users.py --dry-run',
+      previewLabel: 'Before and after',
+      details: formatDetails,
       preview: (
         <BeforeAfterPreview
+          commandLabel="format"
           beforeBlock={{
             label: 'Before',
-            filename: 'jobs/load_users.py',
+            filename: 'jobs/load_paid_users.py',
             language: 'python',
             code: formatBefore,
           }}
           afterBlocks={[
             {
               label: 'After',
-              filename: 'preview only',
+              filename: 'jobs/load_paid_users.py',
               language: 'python',
               code: formatAfter,
             },
           ]}
-          notes={formatNotes}
         />
       ),
     },
     {
       step: '03',
       title: 'Extract to .sql',
-      body: 'Move large embedded queries into external .sql files. The Python side is replaced with a path string (or a Path(...).read_text() call when that fits), and the formatted SQL lives in a real, reviewable file.',
+      summary: 'Move large queries from Python into real SQL files.',
+      body: 'Use extraction when a query should be reviewed as SQL, not as a giant Python string. Python keeps a small reference; SQL gets its own file.',
       command: 'py-sql-cleaner extract jobs/load_users.py --out-dir sql',
-      previewLabel: 'Before → After',
+      previewLabel: 'Python file becomes Python + SQL file',
+      details: extractDetails,
       preview: (
         <BeforeAfterPreview
+          commandLabel="extract"
           beforeBlock={{
             label: 'Before',
             filename: 'jobs/load_users.py',
@@ -409,7 +601,6 @@ function FeatureList() {
               code: extractSqlAfter,
             },
           ]}
-          notes={extractNotes}
         />
       ),
     },
@@ -419,30 +610,52 @@ function FeatureList() {
     <section className={styles.features}>
       <div className="container">
         <div className={styles.sectionHeader}>
-          <Heading as="h2">Built for practical cleanup work</Heading>
-          <p>py-sql-cleaner is a cleanup tool, not a database client. It never connects to databases or executes SQL. Each command shows you exactly what it will change — before it changes anything.</p>
+          <span className={styles.sectionEyebrow}>How it works</span>
+          <Heading as="h2">Three cleanup jobs, one workflow</Heading>
+          <p>
+            py-sql-cleaner targets the cleanup work that piles up after a Python
+            job has accumulated large embedded queries. Find the strings, format
+            the safe ones in place, and move review-worthy queries into real SQL
+            files.
+          </p>
+          <div className={styles.introGrid}>
+            {introPoints.map((point) => (
+              <div className={styles.introPoint} key={point.label}>
+                <strong>{point.label}</strong>
+                <span>{point.text}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className={styles.featureList}>
-          {items.map((item) => (
-            <article className={styles.featureItem} key={item.title}>
-              <div className={styles.featureHeader}>
-                <div className={styles.stepBadge}>{item.step}</div>
-                <div className={styles.featureBody}>
-                  <Heading as="h3">{item.title}</Heading>
-                  <p>{item.body}</p>
+      </div>
+      <div className={styles.featureList}>
+        {items.map((item) => (
+          <article className={styles.featureItem} key={item.title}>
+            <div className="container">
+              <div className={styles.featureGrid}>
+                <div className={styles.featureText}>
+                  <div className={styles.featureHeader}>
+                    <div className={styles.stepBadge}>{item.step}</div>
+                    <div className={styles.featureBody}>
+                      <p className={styles.featureSummary}>{item.summary}</p>
+                      <Heading as="h3">{item.title}</Heading>
+                      <p>{item.body}</p>
+                    </div>
+                  </div>
+                  <div className={styles.command}>
+                    <span>Run</span>
+                    <PromptLine>{item.command}</PromptLine>
+                  </div>
+                  <DetailList items={item.details} />
+                </div>
+                <div className={styles.featurePreview} aria-label={`${item.title} example`}>
+                  <div className={styles.featurePreviewHeader}>{item.previewLabel}</div>
+                  <div className={styles.featurePreviewBody}>{item.preview}</div>
                 </div>
               </div>
-              <div className={styles.command}>
-                <span>Run</span>
-                <PromptLine>{item.command}</PromptLine>
-              </div>
-              <div className={styles.featurePreview} aria-label={`${item.title} example`}>
-                <div className={styles.featurePreviewHeader}>{item.previewLabel}</div>
-                <div className={styles.featurePreviewBody}>{item.preview}</div>
-              </div>
-            </article>
-          ))}
-        </div>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   );
