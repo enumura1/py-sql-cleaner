@@ -46,6 +46,48 @@ from events
     assert "FROM events" in source
 
 
+def test_format_command_preserves_redshift_copy_with_explicit_dialect(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    file.write_text(
+        '''query = """
+COPY users
+FROM '<s3-path>'
+IAM_ROLE '<iam-role-arn>'
+FORMAT AS CSV
+IGNOREHEADER 1
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["format", str(file), "-d", "redshift"])
+
+    assert result.exit_code == 0, result.output
+    source = file.read_text(encoding="utf-8")
+    assert "COPY users" in source
+    assert "IAM_ROLE" in source
+    assert "IGNOREHEADER 1" in source
+
+
+def test_format_command_preserves_mysql_backticks_with_explicit_dialect(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    file.write_text(
+        '''query = """
+select `user_id`
+from `users`
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["format", str(file), "-d", "mysql"])
+
+    assert result.exit_code == 0, result.output
+    source = file.read_text(encoding="utf-8")
+    assert "`user_id`" in source
+    assert "FROM `users`" in source
+
+
 def test_format_command_accepts_short_dialect_option(tmp_path) -> None:
     file = tmp_path / "foo.py"
     file.write_text(

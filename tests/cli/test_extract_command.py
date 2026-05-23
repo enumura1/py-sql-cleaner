@@ -45,6 +45,55 @@ from events
     assert "payload ->> 'name'" in sql_file.read_text(encoding="utf-8")
 
 
+def test_extract_accepts_mysql_dialect(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    file.write_text(
+        '''query = """
+select `user_id`
+from `users`
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["extract", str(file), "--out-dir", "sql", "-d", "mysql"],
+    )
+
+    assert result.exit_code == 0, result.output
+    sql_file = tmp_path / "sql" / "query.sql"
+    assert "`user_id`" in sql_file.read_text(encoding="utf-8")
+    assert "FROM `users`" in sql_file.read_text(encoding="utf-8")
+
+
+def test_extract_accepts_redshift_dialect(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    file.write_text(
+        '''query = """
+COPY users
+FROM '<s3-path>'
+IAM_ROLE '<iam-role-arn>'
+FORMAT AS CSV
+IGNOREHEADER 1
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["extract", str(file), "--out-dir", "sql", "-d", "redshift"],
+    )
+
+    assert result.exit_code == 0, result.output
+    sql_file = tmp_path / "sql" / "query.sql"
+    sql = sql_file.read_text(encoding="utf-8")
+    assert "COPY users" in sql
+    assert "IAM_ROLE" in sql
+    assert "IGNOREHEADER 1" in sql
+
+
 def test_extract_dry_run_does_not_modify_files(tmp_path) -> None:
     file = tmp_path / "foo.py"
     original = '''query = """
