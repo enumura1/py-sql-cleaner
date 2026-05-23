@@ -115,6 +115,31 @@ IGNOREHEADER 1;
     assert "IGNOREHEADER 1" in formatted
 
 
+def test_redshift_copy_command_is_preserved_without_rewriting_options() -> None:
+    sql = """COPY users
+FROM '<s3-path>'
+IAM_ROLE '<iam-role-arn>'
+FORMAT AS CSV
+TIMEFORMAT 'auto'
+IGNOREHEADER 1;"""
+
+    formatted = format_sql(sql, dialect="redshift")
+
+    assert formatted == sql
+
+
+def test_redshift_specific_command_requires_explicit_redshift_dialect() -> None:
+    sql = """
+COPY users
+FROM '<s3-path>'
+IAM_ROLE '<iam-role-arn>'
+FORMAT AS CSV;
+"""
+
+    with pytest.raises(FormatterError, match="requires --dialect redshift"):
+        format_sql(sql)
+
+
 def test_unload_is_preserved_even_when_sqlglot_uses_command_fallback() -> None:
     sql = """
 UNLOAD ('SELECT * FROM users')

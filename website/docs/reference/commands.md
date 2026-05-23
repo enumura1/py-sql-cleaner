@@ -31,6 +31,8 @@ py-sql-cleaner format path/to/file.py -d redshift
 ```
 
 Currently enabled dialects are `generic`, `mysql`, `postgres`, and `redshift`.
+Dialect support is best-effort formatting through SQLGlot. Redshift command-style
+statements such as `COPY` and `UNLOAD` are preserved rather than reformatted.
 
 Preview changes:
 

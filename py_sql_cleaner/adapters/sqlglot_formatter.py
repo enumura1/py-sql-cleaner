@@ -9,6 +9,16 @@ from py_sql_cleaner.domain.config import DEFAULT_BACKEND, DEFAULT_DIALECT
 from py_sql_cleaner.domain.errors import FormatterError
 
 SUPPORTED_DIALECTS = ("generic", "mysql", "postgres", "redshift")
+REDSHIFT_EXPLICIT_DIALECT_KEYWORDS = (
+    "COPY",
+    "UNLOAD",
+    "IAM_ROLE",
+    "DISTKEY",
+    "SORTKEY",
+    "DISTSTYLE",
+    "ENCODE",
+)
+REDSHIFT_PRESERVE_COMMANDS = ("COPY", "UNLOAD")
 
 
 class FormatterBackend(ABC):
@@ -20,6 +30,12 @@ class FormatterBackend(ABC):
 class SqlglotFormatter(FormatterBackend):
     def format(self, sql: str, dialect: str) -> str:
         dialect = normalize_dialect(dialect)
+        if not dialect and _has_redshift_explicit_dialect_keyword(sql):
+            raise FormatterError("redshift-specific SQL requires --dialect redshift")
+        if _dialect_name(dialect) == "redshift" and _starts_with_command(
+            sql, REDSHIFT_PRESERVE_COMMANDS
+        ):
+            return sql.strip()
         try:
             expressions = sqlglot.parse(sql, read=dialect)
             formatted = ";\n\n".join(expr.sql(dialect=dialect, pretty=True) for expr in expressions)
@@ -44,6 +60,20 @@ def normalize_dialect(dialect: str) -> str:
     except Exception as exc:
         raise FormatterError(f"unsupported SQL dialect: {dialect}. {exc}") from exc
     return normalized
+
+
+def _dialect_name(dialect: str) -> str:
+    return dialect.split(",", maxsplit=1)[0].strip().lower()
+
+
+def _has_redshift_explicit_dialect_keyword(sql: str) -> bool:
+    upper_sql = sql.upper()
+    return any(keyword in upper_sql for keyword in REDSHIFT_EXPLICIT_DIALECT_KEYWORDS)
+
+
+def _starts_with_command(sql: str, commands: tuple[str, ...]) -> bool:
+    stripped = sql.lstrip().upper()
+    return any(stripped.startswith(command) for command in commands)
 
 
 def get_formatter_backend(backend: str) -> FormatterBackend:

@@ -69,6 +69,45 @@ IGNOREHEADER 1
     assert "IGNOREHEADER 1" in source
 
 
+def test_format_command_rejects_redshift_copy_without_explicit_dialect(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    original = '''query = """
+COPY users
+FROM '<s3-path>'
+IAM_ROLE '<iam-role-arn>'
+FORMAT AS CSV
+IGNOREHEADER 1
+"""
+'''
+    file.write_text(original, encoding="utf-8")
+
+    result = runner.invoke(app, ["format", str(file)])
+
+    assert result.exit_code == 1
+    assert "requires --dialect redshift" in result.output
+    assert file.read_text(encoding="utf-8") == original
+
+
+def test_check_returns_one_for_redshift_copy_without_explicit_dialect(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    file.write_text(
+        '''query = """
+COPY users
+FROM '<s3-path>'
+IAM_ROLE '<iam-role-arn>'
+FORMAT AS CSV
+IGNOREHEADER 1
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["check", str(file)])
+
+    assert result.exit_code == 1
+    assert "requires --dialect redshift" in result.output
+
+
 def test_format_command_preserves_mysql_backticks_with_explicit_dialect(tmp_path) -> None:
     file = tmp_path / "foo.py"
     file.write_text(

@@ -77,6 +77,10 @@ def format_command(
         raise typer.Exit(1) from exc
     for warning in result.warnings:
         console.print(f"Warning: {warning}")
+    for error in result.errors:
+        console.print(f"Error: {error}")
+    if result.errors:
+        raise typer.Exit(1)
 
     changed = result.source != source
     if dry_run:
