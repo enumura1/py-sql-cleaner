@@ -27,6 +27,49 @@ qualify row_number() over(partition by user_id order by updated_at desc)=1
     assert "PARTITION BY" in source
 
 
+def test_format_command_accepts_non_redshift_dialect(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    file.write_text(
+        '''query = """
+select payload->>'name' as name
+from events
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["format", str(file), "--dialect", "postgres"])
+
+    assert result.exit_code == 0, result.output
+    source = file.read_text(encoding="utf-8")
+    assert "payload ->> 'name'" in source
+    assert "FROM events" in source
+
+
+def test_format_command_rejects_unknown_dialect(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    file.write_text(
+        '''query = """
+select * from users
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["format", str(file), "--dialect", "unknown"])
+
+    assert result.exit_code == 1
+    assert "unsupported SQL dialect" in result.output
+
+
+def test_dialects_command_lists_supported_dialects() -> None:
+    result = runner.invoke(app, ["dialects"])
+
+    assert result.exit_code == 0, result.output
+    assert "postgres" in result.output
+    assert "redshift" in result.output
+
+
 def test_format_dry_run_does_not_modify_file(tmp_path) -> None:
     file = tmp_path / "foo.py"
     original = '''query = """

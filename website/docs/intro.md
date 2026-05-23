@@ -8,8 +8,9 @@ sidebar_position: 1
 embedded in Python files.
 
 It is built for codebases where long SQL queries are written directly inside
-triple-quoted Python strings. The current MVP defaults to the Redshift dialect
-through SQLGlot, with room for broader dialect support over time.
+triple-quoted Python strings. The current MVP uses SQLGlot for formatting,
+defaults to the Redshift dialect, and can format with other SQLGlot dialects via
+`--dialect`.
 
 ```python
 query = """
@@ -38,6 +39,6 @@ formatting. It does not connect to databases and does not execute SQL.
 
 - Python files
 - triple-quoted SQL strings
-- SQLGlot-backed SQL formatting, currently defaulting to the Redshift dialect
+- SQLGlot-backed SQL formatting, defaulting to Redshift with `--dialect` support
 - formatting
 - extracting SQL into `.sql` files

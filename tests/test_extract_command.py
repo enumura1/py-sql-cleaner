@@ -24,6 +24,27 @@ select * from users
     assert file.read_text(encoding="utf-8") == 'query = "sql/query.sql"\n'
 
 
+def test_extract_accepts_non_redshift_dialect(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    file.write_text(
+        '''query = """
+select payload->>'name' as name
+from events
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["extract", str(file), "--out-dir", "sql", "--dialect", "postgres"],
+    )
+
+    assert result.exit_code == 0, result.output
+    sql_file = tmp_path / "sql" / "query.sql"
+    assert "payload ->> 'name'" in sql_file.read_text(encoding="utf-8")
+
+
 def test_extract_dry_run_does_not_modify_files(tmp_path) -> None:
     file = tmp_path / "foo.py"
     original = '''query = """

@@ -7,10 +7,17 @@ from typing import Annotated
 import typer
 from rich.console import Console
 
-from py_sql_cleaner.adapters.sqlglot_formatter import format_sql
+from py_sql_cleaner.adapters.sqlglot_formatter import (
+    SUPPORTED_DIALECTS,
+    format_sql,
+    get_formatter_backend,
+    normalize_dialect,
+)
 from py_sql_cleaner.application.extract_sql import plan_extract
 from py_sql_cleaner.application.format_source import format_source, is_unsafe
 from py_sql_cleaner.core.detector import detect_sql_blocks
+from py_sql_cleaner.domain.config import DEFAULT_BACKEND, DEFAULT_DIALECT
+from py_sql_cleaner.domain.errors import FormatterError
 
 app = typer.Typer(no_args_is_help=True)
 console = Console()
@@ -36,26 +43,34 @@ def list_blocks(file: Annotated[Path, typer.Argument(exists=True, dir_okay=False
 @app.command("format")
 def format_command(
     file: Annotated[Path, typer.Argument(exists=True, dir_okay=False)],
-    dialect: Annotated[str, typer.Option()] = "redshift",
-    backend: Annotated[str, typer.Option()] = "sqlglot",
+    dialect: Annotated[
+        str,
+        typer.Option("--dialect", help="SQLGlot dialect to use for parsing and formatting."),
+    ] = DEFAULT_DIALECT,
+    backend: Annotated[str, typer.Option()] = DEFAULT_BACKEND,
     write: Annotated[bool, typer.Option("--write/--check")] = True,
     dry_run: Annotated[bool, typer.Option("--dry-run")] = False,
     include_unsafe: Annotated[bool, typer.Option("--include-unsafe")] = False,
 ) -> None:
+    _validate_formatter_options(dialect, backend)
     source = file.read_text(encoding="utf-8")
     blocks = detect_sql_blocks(file, source)
     if not blocks:
         console.print("No embedded SQL blocks found.")
         raise typer.Exit(0)
 
-    result = format_source(
-        source,
-        blocks,
-        dialect=dialect,
-        backend=backend,
-        include_unsafe=include_unsafe,
-        formatter=format_sql,
-    )
+    try:
+        result = format_source(
+            source,
+            blocks,
+            dialect=dialect,
+            backend=backend,
+            include_unsafe=include_unsafe,
+            formatter=format_sql,
+        )
+    except FormatterError as exc:
+        console.print(f"Error: {exc}")
+        raise typer.Exit(1) from exc
     for warning in result.warnings:
         console.print(f"Warning: {warning}")
 
@@ -82,8 +97,11 @@ def format_command(
 @app.command("check")
 def check_command(
     file: Annotated[Path, typer.Argument(exists=True, dir_okay=False)],
-    dialect: Annotated[str, typer.Option()] = "redshift",
-    backend: Annotated[str, typer.Option()] = "sqlglot",
+    dialect: Annotated[
+        str,
+        typer.Option("--dialect", help="SQLGlot dialect to use for parsing and formatting."),
+    ] = DEFAULT_DIALECT,
+    backend: Annotated[str, typer.Option()] = DEFAULT_BACKEND,
 ) -> None:
     format_command(file, dialect=dialect, backend=backend, write=False, dry_run=False)
 
@@ -92,12 +110,16 @@ def check_command(
 def extract_command(
     file: Annotated[Path, typer.Argument(exists=True, dir_okay=False)],
     out_dir: Annotated[Path, typer.Option("--out-dir")] = Path("sql"),
-    dialect: Annotated[str, typer.Option()] = "redshift",
-    backend: Annotated[str, typer.Option()] = "sqlglot",
+    dialect: Annotated[
+        str,
+        typer.Option("--dialect", help="SQLGlot dialect to use for extracted SQL."),
+    ] = DEFAULT_DIALECT,
+    backend: Annotated[str, typer.Option()] = DEFAULT_BACKEND,
     replace_mode: Annotated[str, typer.Option("--replace-mode")] = "path",
     dry_run: Annotated[bool, typer.Option("--dry-run")] = False,
     name: Annotated[str | None, typer.Option("--name")] = None,
 ) -> None:
+    _validate_formatter_options(dialect, backend)
     source = file.read_text(encoding="utf-8")
     blocks = detect_sql_blocks(file, source)
     if not blocks:
@@ -107,17 +129,21 @@ def extract_command(
         console.print("Error: --name can only be used when exactly one SQL block is detected.")
         raise typer.Exit(1)
 
-    result = plan_extract(
-        file,
-        source,
-        blocks,
-        out_dir=out_dir,
-        dialect=dialect,
-        backend=backend,
-        replace_mode=replace_mode,
-        name=name,
-        formatter=format_sql,
-    )
+    try:
+        result = plan_extract(
+            file,
+            source,
+            blocks,
+            out_dir=out_dir,
+            dialect=dialect,
+            backend=backend,
+            replace_mode=replace_mode,
+            name=name,
+            formatter=format_sql,
+        )
+    except FormatterError as exc:
+        console.print(f"Error: {exc}")
+        raise typer.Exit(1) from exc
     for warning in result.warnings:
         console.print(f"Warning: {warning}")
 
@@ -139,6 +165,13 @@ def extract_command(
         console.print("Warning: replace-mode=read-text requires `from pathlib import Path`.")
 
 
+@app.command("dialects")
+def dialects_command() -> None:
+    """List SQL dialect values accepted by --dialect."""
+    for dialect in SUPPORTED_DIALECTS:
+        console.print(dialect)
+
+
 def _print_diff(file: Path, old: str, new: str) -> None:
     if old == new:
         console.print("No changes.")
@@ -151,6 +184,15 @@ def _print_diff(file: Path, old: str, new: str) -> None:
         lineterm="",
     )
     console.print("\n".join(diff))
+
+
+def _validate_formatter_options(dialect: str, backend: str) -> None:
+    try:
+        normalize_dialect(dialect)
+        get_formatter_backend(backend)
+    except FormatterError as exc:
+        console.print(f"Error: {exc}")
+        raise typer.Exit(1) from exc
 
 
 def _write_sql_file_at_path(path: Path, sql: str) -> None:

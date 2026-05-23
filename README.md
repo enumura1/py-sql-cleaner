@@ -4,8 +4,9 @@
 embedded in Python files.
 
 It is built for Python codebases where long SQL queries are written directly
-inside triple-quoted Python strings. The current MVP defaults to the Redshift
-dialect through SQLGlot, with room for broader dialect support over time.
+inside triple-quoted Python strings. The current MVP uses SQLGlot for formatting,
+defaults to the Redshift dialect, and can format with other SQLGlot dialects via
+`--dialect`.
 
 ```python
 query = """
@@ -33,6 +34,7 @@ formatting. It does not connect to databases and does not execute SQL.
 - Detect common SQL variable names such as `sql`, `query`, `*_sql`, and
   `*_query`
 - Skip unsafe blocks, including f-strings and Jinja-like templates, by default
+- Support SQLGlot dialect selection with `--dialect`
 - Support `check` mode for CI
 - Support `dry-run` mode before rewriting files
 
@@ -77,13 +79,19 @@ uvx py-sql-cleaner --help
    py-sql-cleaner format jobs/load_users.py
    ```
 
-4. Extract embedded SQL into `.sql` files:
+4. Format with a non-default dialect:
+
+   ```bash
+   py-sql-cleaner format jobs/load_users.py --dialect postgres
+   ```
+
+5. Extract embedded SQL into `.sql` files:
 
    ```bash
    py-sql-cleaner extract jobs/load_users.py --out-dir sql
    ```
 
-5. Check formatting for CI:
+6. Check formatting for CI:
 
    ```bash
    py-sql-cleaner check jobs/load_users.py
@@ -195,6 +203,7 @@ WHERE ds = '{{ ds }}'
 | `format` | Format embedded SQL in place | `py-sql-cleaner format jobs/load_users.py` |
 | `check` | Check whether embedded SQL is formatted | `py-sql-cleaner check jobs/load_users.py` |
 | `extract` | Extract embedded SQL into `.sql` files | `py-sql-cleaner extract jobs/load_users.py --out-dir sql` |
+| `dialects` | List accepted SQLGlot dialect values | `py-sql-cleaner dialects` |
 
 ## Documentation
 
@@ -211,7 +220,7 @@ The current focus is:
 
 - Python files
 - triple-quoted SQL strings
-- SQLGlot-backed SQL formatting, currently defaulting to the Redshift dialect
+- SQLGlot-backed SQL formatting, defaulting to Redshift with `--dialect` support
 - formatting
 - extracting SQL into `.sql` files
 

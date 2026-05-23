@@ -21,6 +21,18 @@ from base;
     assert formatted.endswith(";")
 
 
+def test_formats_with_postgres_dialect() -> None:
+    sql = """
+select payload->>'name' as name
+from events;
+"""
+
+    formatted = format_sql(sql, dialect="postgres")
+
+    assert "payload ->> 'name'" in formatted
+    assert "FROM events" in formatted
+
+
 def test_formats_qualify_without_removing_window_clause() -> None:
     sql = """
 select user_id, updated_at
@@ -87,3 +99,8 @@ FORMAT AS PARQUET;
 def test_unsupported_backend_raises_formatter_error() -> None:
     with pytest.raises(FormatterError):
         format_sql("select * from users", backend="unknown")
+
+
+def test_unsupported_dialect_raises_formatter_error() -> None:
+    with pytest.raises(FormatterError, match="unsupported SQL dialect"):
+        format_sql("select * from users", dialect="unknown")

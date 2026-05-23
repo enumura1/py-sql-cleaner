@@ -10,13 +10,13 @@ The current focus is:
 
 - Python files
 - triple-quoted SQL strings
-- SQLGlot-backed SQL formatting, currently defaulting to the Redshift dialect
+- SQLGlot-backed SQL formatting, defaulting to Redshift with `--dialect` support
 - formatting
 - extracting SQL into `.sql` files
 
 Future versions may add:
 
-- PostgreSQL support
+- database-specific validation beyond SQLGlot formatting
 - better template handling
 - safer f-string handling
 - pre-commit integration
