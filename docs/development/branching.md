@@ -22,6 +22,15 @@ Use these branch name prefixes:
 - `release/<version>` only when release preparation needs multiple commits.
 - `hotfix/<short-name>` for urgent fixes based on `main`.
 
+Examples:
+
+- `feature/add-postgres-dialect`
+- `fix/preserve-copy-options`
+- `docs/branching-strategy`
+- `chore/update-ci-python`
+- `release/0.2.0`
+- `hotfix/formatter-crash`
+
 ## Normal Change Flow
 
 1. Update local `main` from `origin/main`.
