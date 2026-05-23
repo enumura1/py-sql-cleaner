@@ -45,7 +45,10 @@ def format_command(
     file: Annotated[Path, typer.Argument(exists=True, dir_okay=False)],
     dialect: Annotated[
         str,
-        typer.Option("--dialect", help="SQLGlot dialect to use for parsing and formatting."),
+        typer.Option(
+            "--dialect",
+            help="SQLGlot dialect to use for parsing and formatting. Defaults to generic SQL.",
+        ),
     ] = DEFAULT_DIALECT,
     backend: Annotated[str, typer.Option()] = DEFAULT_BACKEND,
     write: Annotated[bool, typer.Option("--write/--check")] = True,
@@ -99,7 +102,10 @@ def check_command(
     file: Annotated[Path, typer.Argument(exists=True, dir_okay=False)],
     dialect: Annotated[
         str,
-        typer.Option("--dialect", help="SQLGlot dialect to use for parsing and formatting."),
+        typer.Option(
+            "--dialect",
+            help="SQLGlot dialect to use for parsing and formatting. Defaults to generic SQL.",
+        ),
     ] = DEFAULT_DIALECT,
     backend: Annotated[str, typer.Option()] = DEFAULT_BACKEND,
 ) -> None:
@@ -112,7 +118,10 @@ def extract_command(
     out_dir: Annotated[Path, typer.Option("--out-dir")] = Path("sql"),
     dialect: Annotated[
         str,
-        typer.Option("--dialect", help="SQLGlot dialect to use for extracted SQL."),
+        typer.Option(
+            "--dialect",
+            help="SQLGlot dialect to use for extracted SQL. Defaults to generic SQL.",
+        ),
     ] = DEFAULT_DIALECT,
     backend: Annotated[str, typer.Option()] = DEFAULT_BACKEND,
     replace_mode: Annotated[str, typer.Option("--replace-mode")] = "path",

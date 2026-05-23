@@ -21,6 +21,17 @@ from base;
     assert formatted.endswith(";")
 
 
+def test_defaults_to_generic_sqlglot_dialect() -> None:
+    sql = """
+select * from users;
+"""
+
+    formatted = format_sql(sql)
+
+    assert "SELECT" in formatted
+    assert "FROM users" in formatted
+
+
 def test_formats_with_postgres_dialect() -> None:
     sql = """
 select payload->>'name' as name
@@ -85,7 +96,7 @@ FORMAT AS CSV
 IGNOREHEADER 1;
 """
 
-    formatted = format_sql(sql)
+    formatted = format_sql(sql, dialect="redshift")
 
     assert "COPY users" in formatted
     assert "IAM_ROLE" in formatted
@@ -100,7 +111,7 @@ IAM_ROLE '<iam-role-arn>'
 FORMAT AS PARQUET;
 """
 
-    formatted = format_sql(sql)
+    formatted = format_sql(sql, dialect="redshift")
 
     assert "UNLOAD" in formatted
     assert "TO '<s3-path>'" in formatted

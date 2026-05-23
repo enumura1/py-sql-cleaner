@@ -9,8 +9,8 @@ embedded in Python files.
 
 It is built for codebases where long SQL queries are written directly inside
 triple-quoted Python strings. The current MVP uses SQLGlot for formatting,
-defaults to the Redshift dialect, and can format with other SQLGlot dialects via
-`--dialect`.
+defaults to SQLGlot's generic dialect, and can format with database-specific
+SQLGlot dialects via `--dialect`.
 
 ```python
 query = """
@@ -39,6 +39,7 @@ formatting. It does not connect to databases and does not execute SQL.
 
 - Python files
 - triple-quoted SQL strings
-- SQLGlot-backed SQL formatting, defaulting to Redshift with `--dialect` support
+- SQLGlot-backed SQL formatting, defaulting to generic SQL with `--dialect`
+  support for database-specific formatting
 - formatting
 - extracting SQL into `.sql` files

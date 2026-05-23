@@ -24,10 +24,10 @@ py-sql-cleaner list path/to/file.py
 py-sql-cleaner format path/to/file.py
 ```
 
-Use a non-default SQLGlot dialect:
+Use a database-specific SQLGlot dialect:
 
 ```bash
-py-sql-cleaner format path/to/file.py --dialect postgres
+py-sql-cleaner format path/to/file.py --dialect redshift
 ```
 
 Preview changes:
@@ -54,7 +54,7 @@ py-sql-cleaner check path/to/file.py --dialect snowflake
 py-sql-cleaner extract path/to/file.py --out-dir sql
 ```
 
-Format extracted SQL with a non-default dialect:
+Format extracted SQL with a database-specific dialect:
 
 ```bash
 py-sql-cleaner extract path/to/file.py --out-dir sql --dialect postgres

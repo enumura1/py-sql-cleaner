@@ -5,8 +5,8 @@ embedded in Python files.
 
 It is built for Python codebases where long SQL queries are written directly
 inside triple-quoted Python strings. The current MVP uses SQLGlot for formatting,
-defaults to the Redshift dialect, and can format with other SQLGlot dialects via
-`--dialect`.
+defaults to SQLGlot's generic dialect, and can format with database-specific
+SQLGlot dialects via `--dialect`.
 
 ```python
 query = """
@@ -79,10 +79,10 @@ uvx py-sql-cleaner --help
    py-sql-cleaner format jobs/load_users.py
    ```
 
-4. Format with a non-default dialect:
+4. Format with a database-specific dialect:
 
    ```bash
-   py-sql-cleaner format jobs/load_users.py --dialect postgres
+   py-sql-cleaner format jobs/load_users.py --dialect redshift
    ```
 
 5. Extract embedded SQL into `.sql` files:
@@ -220,7 +220,8 @@ The current focus is:
 
 - Python files
 - triple-quoted SQL strings
-- SQLGlot-backed SQL formatting, defaulting to Redshift with `--dialect` support
+- SQLGlot-backed SQL formatting, defaulting to generic SQL with `--dialect`
+  support for database-specific formatting
 - formatting
 - extracting SQL into `.sql` files
 

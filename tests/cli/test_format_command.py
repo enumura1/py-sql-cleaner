@@ -27,7 +27,7 @@ qualify row_number() over(partition by user_id order by updated_at desc)=1
     assert "PARTITION BY" in source
 
 
-def test_format_command_accepts_non_redshift_dialect(tmp_path) -> None:
+def test_format_command_accepts_explicit_dialect(tmp_path) -> None:
     file = tmp_path / "foo.py"
     file.write_text(
         '''query = """
@@ -66,6 +66,7 @@ def test_dialects_command_lists_supported_dialects() -> None:
     result = runner.invoke(app, ["dialects"])
 
     assert result.exit_code == 0, result.output
+    assert "generic" in result.output
     assert "postgres" in result.output
     assert "redshift" in result.output
 

@@ -24,7 +24,7 @@ select * from users
     assert file.read_text(encoding="utf-8") == 'query = "sql/query.sql"\n'
 
 
-def test_extract_accepts_non_redshift_dialect(tmp_path) -> None:
+def test_extract_accepts_explicit_dialect(tmp_path) -> None:
     file = tmp_path / "foo.py"
     file.write_text(
         '''query = """

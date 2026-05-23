@@ -8,7 +8,8 @@ from sqlglot.dialects import Dialect
 from py_sql_cleaner.domain.config import DEFAULT_BACKEND, DEFAULT_DIALECT
 from py_sql_cleaner.domain.errors import FormatterError
 
-SUPPORTED_DIALECTS = tuple(sorted(dialect.value for dialect in sqlglot.Dialects if dialect.value))
+BUILT_IN_DIALECTS = tuple(sorted(dialect.value for dialect in sqlglot.Dialects if dialect.value))
+SUPPORTED_DIALECTS = ("generic", *BUILT_IN_DIALECTS)
 
 
 class FormatterBackend(ABC):
@@ -33,6 +34,8 @@ class SqlglotFormatter(FormatterBackend):
 
 def normalize_dialect(dialect: str) -> str:
     normalized = dialect.strip().lower()
+    if normalized == "generic":
+        return ""
     try:
         Dialect.get_or_raise(normalized)
     except Exception as exc:

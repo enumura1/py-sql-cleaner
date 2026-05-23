@@ -1,3 +1,3 @@
-DEFAULT_DIALECT = "redshift"
+DEFAULT_DIALECT = "generic"
 DEFAULT_BACKEND = "sqlglot"
 MIN_CONFIDENCE = 0.7
