@@ -78,9 +78,9 @@ The current focus is:
 
 - Python files
 - triple-quoted SQL strings
-- SQLGlot-backed SQL formatting, currently defaulting to the Redshift dialect
+- SQLGlot-backed SQL formatting, defaulting to Redshift with `--dialect` support
 - formatting
 - extracting SQL into `.sql` files
 
-Please open an issue before starting large features such as new dialect support,
-template handling, or formatter backend changes.
+Please open an issue before starting large features such as template handling,
+formatter backend changes, or support that goes beyond SQLGlot dialect selection.
