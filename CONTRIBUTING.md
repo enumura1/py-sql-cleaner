@@ -46,6 +46,8 @@ Check built distributions:
 ## Contribution Guidelines
 
 - Keep changes focused.
+- Use the branching strategy in `docs/development/branching.md`; do not push
+  directly to `main`.
 - Add or update tests for behavior changes.
 - Keep package dependencies flowing in the direction documented in
   `docs/architecture/README.md`.
