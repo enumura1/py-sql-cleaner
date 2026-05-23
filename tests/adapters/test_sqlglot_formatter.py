@@ -33,6 +33,17 @@ from events;
     assert "FROM events" in formatted
 
 
+def test_formats_with_sqlglot_dialect_settings() -> None:
+    sql = """
+select * from users;
+"""
+
+    formatted = format_sql(sql, dialect="postgres, normalization_strategy=case_sensitive")
+
+    assert "SELECT" in formatted
+    assert "FROM users" in formatted
+
+
 def test_formats_qualify_without_removing_window_clause() -> None:
     sql = """
 select user_id, updated_at

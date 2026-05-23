@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 import sqlglot
+from sqlglot.dialects import Dialect
 
 from py_sql_cleaner.domain.config import DEFAULT_BACKEND, DEFAULT_DIALECT
 from py_sql_cleaner.domain.errors import FormatterError
@@ -32,9 +33,10 @@ class SqlglotFormatter(FormatterBackend):
 
 def normalize_dialect(dialect: str) -> str:
     normalized = dialect.strip().lower()
-    if normalized not in SUPPORTED_DIALECTS:
-        supported = ", ".join(SUPPORTED_DIALECTS)
-        raise FormatterError(f"unsupported SQL dialect: {dialect}. Supported dialects: {supported}")
+    try:
+        Dialect.get_or_raise(normalized)
+    except Exception as exc:
+        raise FormatterError(f"unsupported SQL dialect: {dialect}. {exc}") from exc
     return normalized
 
 
