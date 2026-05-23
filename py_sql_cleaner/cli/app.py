@@ -46,6 +46,7 @@ def format_command(
     dialect: Annotated[
         str,
         typer.Option(
+            "-d",
             "--dialect",
             help="SQLGlot dialect to use for parsing and formatting. Defaults to generic SQL.",
         ),
@@ -103,6 +104,7 @@ def check_command(
     dialect: Annotated[
         str,
         typer.Option(
+            "-d",
             "--dialect",
             help="SQLGlot dialect to use for parsing and formatting. Defaults to generic SQL.",
         ),
@@ -119,6 +121,7 @@ def extract_command(
     dialect: Annotated[
         str,
         typer.Option(
+            "-d",
             "--dialect",
             help="SQLGlot dialect to use for extracted SQL. Defaults to generic SQL.",
         ),

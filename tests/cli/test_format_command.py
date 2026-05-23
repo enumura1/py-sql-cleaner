@@ -46,6 +46,23 @@ from events
     assert "FROM events" in source
 
 
+def test_format_command_accepts_short_dialect_option(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    file.write_text(
+        '''query = """
+select payload->>'name' as name
+from events
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["format", str(file), "-d", "postgres"])
+
+    assert result.exit_code == 0, result.output
+    assert "payload ->> 'name'" in file.read_text(encoding="utf-8")
+
+
 def test_format_command_rejects_unknown_dialect(tmp_path) -> None:
     file = tmp_path / "foo.py"
     file.write_text(

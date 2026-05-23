@@ -82,7 +82,7 @@ uvx py-sql-cleaner --help
 4. Format with a database-specific dialect:
 
    ```bash
-   py-sql-cleaner format jobs/load_users.py --dialect redshift
+   py-sql-cleaner format jobs/load_users.py -d redshift
    ```
 
 5. Extract embedded SQL into `.sql` files:
