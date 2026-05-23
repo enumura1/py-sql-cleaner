@@ -30,6 +30,8 @@ Use a database-specific SQLGlot dialect:
 py-sql-cleaner format path/to/file.py -d redshift
 ```
 
+Currently enabled dialects are `generic`, `mysql`, `postgres`, and `redshift`.
+
 Preview changes:
 
 ```bash

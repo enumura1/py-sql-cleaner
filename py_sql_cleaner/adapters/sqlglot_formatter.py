@@ -8,7 +8,7 @@ from sqlglot.dialects import Dialect
 from py_sql_cleaner.domain.config import DEFAULT_BACKEND, DEFAULT_DIALECT
 from py_sql_cleaner.domain.errors import FormatterError
 
-SUPPORTED_DIALECTS = ("generic", "postgres", "redshift")
+SUPPORTED_DIALECTS = ("generic", "mysql", "postgres", "redshift")
 
 
 class FormatterBackend(ABC):

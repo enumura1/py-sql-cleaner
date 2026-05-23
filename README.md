@@ -85,6 +85,9 @@ uvx py-sql-cleaner --help
    py-sql-cleaner format jobs/load_users.py -d redshift
    ```
 
+   Currently enabled dialects are `generic`, `mysql`, `postgres`, and
+   `redshift`.
+
 5. Extract embedded SQL into `.sql` files:
 
    ```bash

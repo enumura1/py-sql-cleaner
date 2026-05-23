@@ -44,6 +44,18 @@ from events;
     assert "FROM events" in formatted
 
 
+def test_formats_with_mysql_dialect() -> None:
+    sql = """
+select `user_id`
+from `users`;
+"""
+
+    formatted = format_sql(sql, dialect="mysql")
+
+    assert "`user_id`" in formatted
+    assert "FROM `users`" in formatted
+
+
 def test_formats_with_sqlglot_dialect_settings() -> None:
     sql = """
 select * from users;
@@ -129,5 +141,5 @@ def test_unsupported_dialect_raises_formatter_error() -> None:
 
 
 def test_unreviewed_sqlglot_dialect_raises_formatter_error() -> None:
-    with pytest.raises(FormatterError, match="Supported dialects: generic, postgres, redshift"):
+    with pytest.raises(FormatterError, match="generic, mysql, postgres, redshift"):
         format_sql("select * from users", dialect="snowflake")
