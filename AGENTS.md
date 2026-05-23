@@ -1,6 +1,14 @@
 # Coding Agent Instructions
 
-Follow the package architecture in `docs/architecture/README.md`.
+Start here, then open the referenced docs only when they are relevant to the
+change.
+
+## Project Map
+
+- Architecture: `docs/architecture/README.md`
+- Branch workflow: `docs/development/branching.md`
+- Test layout: `tests/README.md`
+- Contributor workflow: `CONTRIBUTING.md`
 
 ## Dependency Rules
 
