@@ -6,7 +6,7 @@ embedded in Python files.
 It is built for Python codebases where long SQL queries are written directly
 inside triple-quoted Python strings. The current MVP uses SQLGlot for formatting,
 defaults to SQLGlot's generic dialect, and can format with database-specific
-SQLGlot dialects via `--dialect`.
+dialects that this project has explicitly enabled via `--dialect`.
 
 ```python
 query = """
@@ -34,7 +34,7 @@ formatting. It does not connect to databases and does not execute SQL.
 - Detect common SQL variable names such as `sql`, `query`, `*_sql`, and
   `*_query`
 - Skip unsafe blocks, including f-strings and Jinja-like templates, by default
-- Support SQLGlot dialect selection with `--dialect`
+- Support explicit dialect selection with `--dialect` / `-d`
 - Support `check` mode for CI
 - Support `dry-run` mode before rewriting files
 
@@ -203,7 +203,7 @@ WHERE ds = '{{ ds }}'
 | `format` | Format embedded SQL in place | `py-sql-cleaner format jobs/load_users.py` |
 | `check` | Check whether embedded SQL is formatted | `py-sql-cleaner check jobs/load_users.py` |
 | `extract` | Extract embedded SQL into `.sql` files | `py-sql-cleaner extract jobs/load_users.py --out-dir sql` |
-| `dialects` | List accepted SQLGlot dialect values | `py-sql-cleaner dialects` |
+| `dialects` | List accepted dialect values | `py-sql-cleaner dialects` |
 
 ## Documentation
 
@@ -221,7 +221,7 @@ The current focus is:
 - Python files
 - triple-quoted SQL strings
 - SQLGlot-backed SQL formatting, defaulting to generic SQL with `--dialect`
-  support for database-specific formatting
+  support for explicitly enabled database-specific formatting
 - formatting
 - extracting SQL into `.sql` files
 

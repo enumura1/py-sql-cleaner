@@ -79,9 +79,9 @@ The current focus is:
 - Python files
 - triple-quoted SQL strings
 - SQLGlot-backed SQL formatting, defaulting to generic SQL with `--dialect`
-  support for database-specific formatting
+  support for explicitly enabled database-specific formatting
 - formatting
 - extracting SQL into `.sql` files
 
 Please open an issue before starting large features such as template handling,
-formatter backend changes, or support that goes beyond SQLGlot dialect selection.
+formatter backend changes, or new dialect support.

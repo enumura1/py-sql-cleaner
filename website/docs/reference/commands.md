@@ -10,7 +10,7 @@ sidebar_position: 1
 | `format` | Format embedded SQL in place | `py-sql-cleaner format jobs/load_users.py` |
 | `check` | Check whether embedded SQL is formatted | `py-sql-cleaner check jobs/load_users.py` |
 | `extract` | Extract embedded SQL into `.sql` files | `py-sql-cleaner extract jobs/load_users.py --out-dir sql` |
-| `dialects` | List accepted SQLGlot dialect values | `py-sql-cleaner dialects` |
+| `dialects` | List accepted dialect values | `py-sql-cleaner dialects` |
 
 ## `list`
 
@@ -45,7 +45,7 @@ py-sql-cleaner check path/to/file.py
 Use the same dialect option as `format`:
 
 ```bash
-py-sql-cleaner check path/to/file.py -d snowflake
+py-sql-cleaner check path/to/file.py -d postgres
 ```
 
 ## `extract`
@@ -89,4 +89,4 @@ py-sql-cleaner extract path/to/file.py --out-dir sql --name load_users
 py-sql-cleaner dialects
 ```
 
-The output lists the SQLGlot dialect values accepted by `--dialect`.
+The output lists the dialect values accepted by `--dialect` / `-d`.

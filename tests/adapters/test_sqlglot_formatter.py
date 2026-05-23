@@ -126,3 +126,8 @@ def test_unsupported_backend_raises_formatter_error() -> None:
 def test_unsupported_dialect_raises_formatter_error() -> None:
     with pytest.raises(FormatterError, match="unsupported SQL dialect"):
         format_sql("select * from users", dialect="unknown")
+
+
+def test_unreviewed_sqlglot_dialect_raises_formatter_error() -> None:
+    with pytest.raises(FormatterError, match="Supported dialects: generic, postgres, redshift"):
+        format_sql("select * from users", dialect="snowflake")

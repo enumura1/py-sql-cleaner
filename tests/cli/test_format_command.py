@@ -77,6 +77,9 @@ select * from users
 
     assert result.exit_code == 1
     assert "unsupported SQL dialect" in result.output
+    assert "generic" in result.output
+    assert "postgres" in result.output
+    assert "redshift" in result.output
 
 
 def test_dialects_command_lists_supported_dialects() -> None:
@@ -86,6 +89,7 @@ def test_dialects_command_lists_supported_dialects() -> None:
     assert "generic" in result.output
     assert "postgres" in result.output
     assert "redshift" in result.output
+    assert "snowflake" not in result.output
 
 
 def test_format_dry_run_does_not_modify_file(tmp_path) -> None:

@@ -11,12 +11,13 @@ The current focus is:
 - Python files
 - triple-quoted SQL strings
 - SQLGlot-backed SQL formatting, defaulting to generic SQL with `--dialect`
-  support for database-specific formatting
+  support for explicitly enabled database-specific formatting
 - formatting
 - extracting SQL into `.sql` files
 
 Future versions may add:
 
+- additional SQL dialects based on user demand
 - database-specific validation beyond SQLGlot formatting
 - better template handling
 - safer f-string handling

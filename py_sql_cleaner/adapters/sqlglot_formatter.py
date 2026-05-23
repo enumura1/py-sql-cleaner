@@ -8,8 +8,7 @@ from sqlglot.dialects import Dialect
 from py_sql_cleaner.domain.config import DEFAULT_BACKEND, DEFAULT_DIALECT
 from py_sql_cleaner.domain.errors import FormatterError
 
-BUILT_IN_DIALECTS = tuple(sorted(dialect.value for dialect in sqlglot.Dialects if dialect.value))
-SUPPORTED_DIALECTS = ("generic", *BUILT_IN_DIALECTS)
+SUPPORTED_DIALECTS = ("generic", "postgres", "redshift")
 
 
 class FormatterBackend(ABC):
@@ -36,6 +35,10 @@ def normalize_dialect(dialect: str) -> str:
     normalized = dialect.strip().lower()
     if normalized == "generic":
         return ""
+    dialect_name = normalized.split(",", maxsplit=1)[0].strip()
+    if dialect_name not in SUPPORTED_DIALECTS:
+        supported = ", ".join(SUPPORTED_DIALECTS)
+        raise FormatterError(f"unsupported SQL dialect: {dialect}. Supported dialects: {supported}")
     try:
         Dialect.get_or_raise(normalized)
     except Exception as exc:
