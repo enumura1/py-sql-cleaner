@@ -31,6 +31,11 @@ Check built distributions:
 .venv/bin/python -m twine check dist/*
 ```
 
+## Code Review Tooling
+
+CodeRabbit repository settings live in `.coderabbit.yaml`. Install the CodeRabbit
+GitHub App on this public repository to enable automated pull request reviews.
+
 ## Guidelines
 
 - Keep changes focused.

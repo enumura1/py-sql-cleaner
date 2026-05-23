@@ -1,0 +1,29 @@
+language: en-US
+
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  review_status: true
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    - "!dist/**"
+    - "!website/build/**"
+    - "!website/.docusaurus/**"
+  path_instructions:
+    - path: "py_sql_cleaner/**/*.py"
+      instructions: >
+        Review against the layered architecture in docs/architecture/README.md.
+        Keep SQLGlot isolated in adapters, keep Typer and Rich in cli, and keep
+        application code dependent on formatter ports instead of concrete
+        adapters.
+    - path: "tests/**/*.py"
+      instructions: >
+        Prefer focused behavior tests that cover CLI behavior, formatter
+        behavior, and safety around skipped f-strings or Jinja-like templates.
+    - path: "docs/**"
+      instructions: >
+        Keep development documentation concise and consistent with
+        CONTRIBUTING.md and docs/architecture/README.md.
