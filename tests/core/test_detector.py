@@ -63,3 +63,42 @@ select * from users where ds = '{{ ds }}'
 
     assert len(blocks) == 1
     assert blocks[0].has_jinja is True
+
+
+def test_detects_redshift_copy_statement() -> None:
+    source = '''query = """
+COPY users
+FROM '<s3-path>'
+IAM_ROLE '<iam-role-arn>'
+FORMAT AS CSV
+"""
+'''
+
+    blocks = detect_sql_blocks(Path("foo.py"), source)
+
+    assert len(blocks) == 1
+    assert blocks[0].confidence == 0.95
+
+
+def test_detects_postgres_operator_statement() -> None:
+    source = '''query = """
+select payload->>'name' as name
+from events
+"""
+'''
+
+    blocks = detect_sql_blocks(Path("foo.py"), source)
+
+    assert len(blocks) == 1
+
+
+def test_detects_mysql_backtick_statement() -> None:
+    source = '''query = """
+select `user_id`
+from `users`
+"""
+'''
+
+    blocks = detect_sql_blocks(Path("foo.py"), source)
+
+    assert len(blocks) == 1

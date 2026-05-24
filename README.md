@@ -4,8 +4,9 @@
 embedded in Python files.
 
 It is built for Python codebases where long SQL queries are written directly
-inside triple-quoted Python strings. The current MVP defaults to the Redshift
-dialect through SQLGlot, with room for broader dialect support over time.
+inside triple-quoted Python strings. The current MVP uses SQLGlot for formatting,
+defaults to SQLGlot's generic dialect, and can format with database-specific
+dialects that this project has explicitly enabled via `--dialect`.
 
 ```python
 query = """
@@ -20,6 +21,10 @@ file.
 
 `py-sql-cleaner` is an early MVP. It uses SQLGlot internally for best-effort SQL
 formatting. It does not connect to databases and does not execute SQL.
+Dialect support means SQLGlot parser/formatter mode selection, not exhaustive
+database validation. Redshift command-style statements such as `COPY` and
+`UNLOAD` are preserved rather than reformatted to avoid changing load/export
+options.
 
 > [!NOTE]
 > `py-sql-cleaner` is conservative by default: f-strings and Jinja-like templates are
@@ -33,6 +38,7 @@ formatting. It does not connect to databases and does not execute SQL.
 - Detect common SQL variable names such as `sql`, `query`, `*_sql`, and
   `*_query`
 - Skip unsafe blocks, including f-strings and Jinja-like templates, by default
+- Support explicit dialect selection with `--dialect` / `-d`
 - Support `check` mode for CI
 - Support `dry-run` mode before rewriting files
 
@@ -77,13 +83,22 @@ uvx py-sql-cleaner --help
    py-sql-cleaner format jobs/load_users.py
    ```
 
-4. Extract embedded SQL into `.sql` files:
+4. Format with a database-specific dialect:
+
+   ```bash
+   py-sql-cleaner format jobs/load_users.py -d redshift
+   ```
+
+   Currently enabled dialects are `generic`, `mysql`, `postgres`, and
+   `redshift`.
+
+5. Extract embedded SQL into `.sql` files:
 
    ```bash
    py-sql-cleaner extract jobs/load_users.py --out-dir sql
    ```
 
-5. Check formatting for CI:
+6. Check formatting for CI:
 
    ```bash
    py-sql-cleaner check jobs/load_users.py
@@ -195,6 +210,7 @@ WHERE ds = '{{ ds }}'
 | `format` | Format embedded SQL in place | `py-sql-cleaner format jobs/load_users.py` |
 | `check` | Check whether embedded SQL is formatted | `py-sql-cleaner check jobs/load_users.py` |
 | `extract` | Extract embedded SQL into `.sql` files | `py-sql-cleaner extract jobs/load_users.py --out-dir sql` |
+| `dialects` | List accepted dialect values | `py-sql-cleaner dialects` |
 
 ## Documentation
 
@@ -211,7 +227,8 @@ The current focus is:
 
 - Python files
 - triple-quoted SQL strings
-- SQLGlot-backed SQL formatting, currently defaulting to the Redshift dialect
+- SQLGlot-backed SQL formatting, defaulting to generic SQL with `--dialect`
+  support for explicitly enabled database-specific formatting
 - formatting
 - extracting SQL into `.sql` files
 

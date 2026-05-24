@@ -10,6 +10,7 @@ sidebar_position: 1
 | `format` | Format embedded SQL in place | `py-sql-cleaner format jobs/load_users.py` |
 | `check` | Check whether embedded SQL is formatted | `py-sql-cleaner check jobs/load_users.py` |
 | `extract` | Extract embedded SQL into `.sql` files | `py-sql-cleaner extract jobs/load_users.py --out-dir sql` |
+| `dialects` | List accepted dialect values | `py-sql-cleaner dialects` |
 
 ## `list`
 
@@ -23,6 +24,16 @@ py-sql-cleaner list path/to/file.py
 py-sql-cleaner format path/to/file.py
 ```
 
+Use a database-specific SQLGlot dialect:
+
+```bash
+py-sql-cleaner format path/to/file.py -d redshift
+```
+
+Currently enabled dialects are `generic`, `mysql`, `postgres`, and `redshift`.
+Dialect support is best-effort formatting through SQLGlot. Redshift command-style
+statements such as `COPY` and `UNLOAD` are preserved rather than reformatted.
+
 Preview changes:
 
 ```bash
@@ -35,10 +46,22 @@ py-sql-cleaner format path/to/file.py --dry-run
 py-sql-cleaner check path/to/file.py
 ```
 
+Use the same dialect option as `format`:
+
+```bash
+py-sql-cleaner check path/to/file.py -d postgres
+```
+
 ## `extract`
 
 ```bash
 py-sql-cleaner extract path/to/file.py --out-dir sql
+```
+
+Format extracted SQL with a database-specific dialect:
+
+```bash
+py-sql-cleaner extract path/to/file.py --out-dir sql -d postgres
 ```
 
 Use `read-text` replacement mode:
@@ -63,3 +86,11 @@ Specify an output name:
 ```bash
 py-sql-cleaner extract path/to/file.py --out-dir sql --name load_users
 ```
+
+## `dialects`
+
+```bash
+py-sql-cleaner dialects
+```
+
+The output lists the dialect values accepted by `--dialect` / `-d`.

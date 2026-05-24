@@ -42,6 +42,9 @@ Detected variable names include:
 - `CREATE`
 - `MERGE`
 
+Redshift command-style statements such as `COPY` and `UNLOAD` should be run with
+`-d redshift`. They are detected and preserved rather than reformatted.
+
 ## Not Targeted in the MVP
 
 ```python

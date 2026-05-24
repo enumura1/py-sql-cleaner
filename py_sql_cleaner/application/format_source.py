@@ -12,6 +12,7 @@ from py_sql_cleaner.domain.models import SqlBlock
 class FormatSourceResult:
     source: str
     warnings: list[str]
+    errors: list[str]
 
 
 def format_source(
@@ -24,6 +25,7 @@ def format_source(
     formatter: SqlFormatter,
 ) -> FormatSourceResult:
     warnings: list[str] = []
+    errors: list[str] = []
     new_source = source
     for block in reversed(blocks):
         reason = unsafe_reason(block)
@@ -35,14 +37,14 @@ def format_source(
             continue
         try:
             formatted = formatter(block.raw_sql, dialect, backend)
-        except FormatterError:
-            warnings.append(
+        except FormatterError as exc:
+            errors.append(
                 f"failed to format SQL block {block.file_path}:{block.start_line}-"
-                f"{block.end_line} with {backend}. Skipping."
+                f"{block.end_line} with {backend}: {exc}. Skipping."
             )
             continue
         new_source = replace_sql_content(new_source, block, formatted)
-    return FormatSourceResult(source=new_source, warnings=warnings)
+    return FormatSourceResult(source=new_source, warnings=warnings, errors=errors)
 
 
 def unsafe_reason(block: SqlBlock) -> str | None:

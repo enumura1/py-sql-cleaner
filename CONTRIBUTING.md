@@ -46,6 +46,8 @@ Check built distributions:
 ## Contribution Guidelines
 
 - Keep changes focused.
+- Use the branching strategy in `docs/development/branching.md`; do not push
+  directly to `main`.
 - Add or update tests for behavior changes.
 - Keep package dependencies flowing in the direction documented in
   `docs/architecture/README.md`.
@@ -65,15 +67,21 @@ git config core.hooksPath .githooks
 
 The pre-push hook runs `scripts/check`, matching the local harness and CI.
 
+## Code Review Tooling
+
+CodeRabbit repository settings live in `.coderabbit.yaml`. Install the CodeRabbit
+GitHub App on this public repository to enable automated pull request reviews.
+
 ## Scope
 
 The current focus is:
 
 - Python files
 - triple-quoted SQL strings
-- SQLGlot-backed SQL formatting, currently defaulting to the Redshift dialect
+- SQLGlot-backed SQL formatting, defaulting to generic SQL with `--dialect`
+  support for explicitly enabled database-specific formatting
 - formatting
 - extracting SQL into `.sql` files
 
-Please open an issue before starting large features such as new dialect support,
-template handling, or formatter backend changes.
+Please open an issue before starting large features such as template handling,
+formatter backend changes, or new dialect support.
