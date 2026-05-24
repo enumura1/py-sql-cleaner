@@ -69,7 +69,9 @@ def _dialect_name(dialect: str) -> str:
 
 
 def _has_redshift_explicit_dialect_keyword(sql: str) -> bool:
-    return any(token.text.upper() in REDSHIFT_EXPLICIT_DIALECT_KEYWORDS for token in _word_tokens(sql))
+    return any(
+        token.text.upper() in REDSHIFT_EXPLICIT_DIALECT_KEYWORDS for token in _word_tokens(sql)
+    )
 
 
 def _starts_with_command(sql: str, commands: tuple[str, ...]) -> bool:
@@ -87,9 +89,12 @@ def _word_tokens(sql: str) -> Iterator:
 
 
 def _is_backtick_quoted_token(sql: str, token) -> bool:
-    return token.start > 0 and token.end + 1 < len(sql) and sql[token.start - 1] == "`" and sql[
-        token.end + 1
-    ] == "`"
+    return (
+        token.start > 0
+        and token.end + 1 < len(sql)
+        and sql[token.start - 1] == "`"
+        and sql[token.end + 1] == "`"
+    )
 
 
 def get_formatter_backend(backend: str) -> FormatterBackend:
