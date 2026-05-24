@@ -7,6 +7,8 @@ from py_sql_cleaner.core.rewriter import replace_sql_content
 from py_sql_cleaner.domain.errors import FormatterError
 from py_sql_cleaner.domain.models import SqlBlock
 
+ALWAYS_SKIP_UNSAFE_REASONS = {"f-string", "jinja"}
+
 
 @dataclass(frozen=True)
 class FormatSourceResult:
@@ -29,7 +31,7 @@ def format_source(
     new_source = source
     for block in reversed(blocks):
         reason = unsafe_reason(block)
-        if reason and not include_unsafe:
+        if reason and (not include_unsafe or reason in ALWAYS_SKIP_UNSAFE_REASONS):
             warnings.append(
                 f"Skipped unsafe SQL block {block.file_path}:{block.start_line}-"
                 f"{block.end_line} reason={reason}"

@@ -51,5 +51,24 @@ Redshift command-style statements such as `COPY` and `UNLOAD` should be run with
 query = "SELECT * FROM users"
 ```
 
+f-strings and Jinja-like templates are detected but skipped by `format` and
+`extract`:
+
+```python
+query = f"""
+SELECT *
+FROM users
+WHERE user_id = {user_id}
+"""
+```
+
+```python
+query = """
+SELECT *
+FROM users
+WHERE ds = '{{ ds }}'
+"""
+```
+
 Single-line strings, deep Airflow parsing, full f-string handling, and full
 Jinja handling are outside the current MVP scope.

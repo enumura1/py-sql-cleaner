@@ -42,10 +42,11 @@ def plan_extract(
     planned_paths: set[Path] = set()
 
     for block in blocks:
-        if block.is_f_string:
+        unsafe_reason = _unsafe_extract_reason(block)
+        if unsafe_reason:
             warnings.append(
                 f"Skipped unsafe SQL block {source_file}:{block.start_line}-{block.end_line} "
-                "reason=f-string"
+                f"reason={unsafe_reason}"
             )
             continue
 
@@ -54,15 +55,14 @@ def plan_extract(
         planned_paths.add(output_path)
 
         sql = block.raw_sql.strip()
-        if not block.has_jinja:
-            try:
-                sql = formatter(sql, dialect, backend)
-            except FormatterError:
-                warnings.append(
-                    "failed to format SQL block "
-                    f"{source_file}:{block.start_line}-{block.end_line} with {backend}. "
-                    "Writing original SQL."
-                )
+        try:
+            sql = formatter(sql, dialect, backend)
+        except FormatterError:
+            warnings.append(
+                "failed to format SQL block "
+                f"{source_file}:{block.start_line}-{block.end_line} with {backend}. "
+                "Writing original SQL."
+            )
         replacements.append(ExtractedSql(block=block, output_path=output_path, sql=sql))
 
     new_source = source
@@ -76,6 +76,14 @@ def plan_extract(
         )
 
     return ExtractPlan(source=new_source, replacements=replacements, warnings=warnings)
+
+
+def _unsafe_extract_reason(block: SqlBlock) -> str | None:
+    if block.is_f_string:
+        return "f-string"
+    if block.has_jinja:
+        return "jinja"
+    return None
 
 
 def unique_planned_sql_path(out_dir: Path, file_name: str, planned_paths: set[Path]) -> Path:

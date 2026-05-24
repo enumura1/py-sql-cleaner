@@ -11,16 +11,13 @@ from py_sql_cleaner.domain.config import DEFAULT_BACKEND, DEFAULT_DIALECT
 from py_sql_cleaner.domain.errors import FormatterError
 
 SUPPORTED_DIALECTS = ("generic", "mysql", "postgres", "redshift")
-REDSHIFT_EXPLICIT_DIALECT_KEYWORDS = (
-    "COPY",
-    "UNLOAD",
-    "IAM_ROLE",
+REDSHIFT_TABLE_OPTION_KEYWORDS = (
     "DISTKEY",
     "SORTKEY",
     "DISTSTYLE",
-    "ENCODE",
 )
 REDSHIFT_PRESERVE_COMMANDS = ("COPY", "UNLOAD")
+REDSHIFT_COLUMN_OPTION_KEYWORDS = ("ENCODE",)
 
 
 class FormatterBackend(ABC):
@@ -69,14 +66,42 @@ def _dialect_name(dialect: str) -> str:
 
 
 def _has_redshift_explicit_dialect_keyword(sql: str) -> bool:
+    tokens = list(_word_tokens(sql))
+    if _starts_with_command_tokens(tokens, REDSHIFT_PRESERVE_COMMANDS):
+        return True
     return any(
-        token.text.upper() in REDSHIFT_EXPLICIT_DIALECT_KEYWORDS for token in _word_tokens(sql)
+        _is_redshift_explicit_dialect_token(tokens, index)
+        for index, token in enumerate(tokens)
+        if token.text.upper() in REDSHIFT_TABLE_OPTION_KEYWORDS + REDSHIFT_COLUMN_OPTION_KEYWORDS
     )
 
 
 def _starts_with_command(sql: str, commands: tuple[str, ...]) -> bool:
-    first_token = next(iter(_word_tokens(sql)), None)
+    return _starts_with_command_tokens(list(_word_tokens(sql)), commands)
+
+
+def _starts_with_command_tokens(tokens: list, commands: tuple[str, ...]) -> bool:
+    first_token = next(iter(tokens), None)
     return bool(first_token and first_token.text.upper() in commands)
+
+
+def _is_redshift_explicit_dialect_token(tokens: list, index: int) -> bool:
+    token_text = tokens[index].text.upper()
+    if token_text in REDSHIFT_TABLE_OPTION_KEYWORDS:
+        return _looks_like_table_option(tokens, index)
+    if token_text in REDSHIFT_COLUMN_OPTION_KEYWORDS:
+        return _looks_like_table_option(tokens, index)
+    return False
+
+
+def _looks_like_table_option(tokens: list, index: int) -> bool:
+    previous_token = tokens[index - 1].text.upper() if index > 0 else ""
+    next_token = tokens[index + 1].text.upper() if index + 1 < len(tokens) else ""
+    return previous_token not in {"", ",", "SELECT", "AS"} and next_token not in {
+        "",
+        ",",
+        "FROM",
+    }
 
 
 def _word_tokens(sql: str) -> Iterator:

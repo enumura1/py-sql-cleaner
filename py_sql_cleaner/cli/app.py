@@ -7,6 +7,7 @@ from typing import Annotated
 import typer
 from rich.console import Console
 
+from py_sql_cleaner import __version__
 from py_sql_cleaner.adapters.sqlglot_formatter import (
     SUPPORTED_DIALECTS,
     format_sql,
@@ -21,6 +22,22 @@ from py_sql_cleaner.domain.errors import FormatterError
 
 app = typer.Typer(no_args_is_help=True)
 console = Console()
+
+
+@app.callback(invoke_without_command=True)
+def main(
+    version: Annotated[
+        bool,
+        typer.Option(
+            "--version",
+            help="Show the installed py-sql-cleaner version.",
+            is_eager=True,
+        ),
+    ] = False,
+) -> None:
+    if version:
+        console.print(f"py-sql-cleaner {__version__}")
+        raise typer.Exit()
 
 
 @app.command("list")

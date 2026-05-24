@@ -175,7 +175,7 @@ rewriting them.
 > Skipped blocks are left unchanged. This is intentional: preserving runtime
 > behavior is more important than formatting every SQL-looking string.
 
-Skipped by default:
+Always skipped by `format` and `extract`:
 
 ```python
 query = f"""
@@ -192,6 +192,10 @@ FROM users
 WHERE ds = '{{ ds }}'
 """
 ```
+
+f-strings and Jinja-like templates are not complete SQL at rest. Python or a
+template engine fills those values at runtime, so rewriting or extracting the
+file contents directly could change runtime behavior.
 
 `py-sql-cleaner` does not:
 
@@ -214,6 +218,8 @@ WHERE ds = '{{ ds }}'
 | `check` | Check whether embedded SQL is formatted | `py-sql-cleaner check jobs/load_users.py` |
 | `extract` | Extract embedded SQL into `.sql` files | `py-sql-cleaner extract jobs/load_users.py --out-dir sql` |
 | `dialects` | List accepted dialect values | `py-sql-cleaner dialects` |
+
+Use `py-sql-cleaner --version` to print the installed CLI version.
 
 ## Documentation
 

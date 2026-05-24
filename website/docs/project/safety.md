@@ -14,7 +14,7 @@ than formatting every SQL-looking string.
 
 ## Unsafe Blocks
 
-f-strings are skipped by default:
+f-strings are always skipped by `format` and `extract`:
 
 ```python
 query = f"""
@@ -24,7 +24,7 @@ WHERE user_id = {user_id}
 """
 ```
 
-Jinja-like templates are also skipped during formatting:
+Jinja-like templates are also always skipped by `format` and `extract`:
 
 ```python
 query = """
@@ -38,6 +38,8 @@ Reasons:
 
 - f-strings may contain Python expressions
 - Jinja-like templates may be used by Airflow, dbt, or other tools
+- these strings are completed at runtime, after Python or a template engine
+  fills in values
 - rewriting these strings incorrectly could change runtime behavior
 
 ## What py-sql-cleaner Does Not Do

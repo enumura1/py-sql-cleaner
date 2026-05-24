@@ -12,6 +12,14 @@ sidebar_position: 1
 | `extract` | Extract embedded SQL into `.sql` files | `py-sql-cleaner extract jobs/load_users.py --out-dir sql` |
 | `dialects` | List accepted dialect values | `py-sql-cleaner dialects` |
 
+## `--version`
+
+```bash
+py-sql-cleaner --version
+```
+
+Prints the installed CLI version.
+
 ## `list`
 
 ```bash
@@ -57,6 +65,9 @@ py-sql-cleaner check path/to/file.py -d postgres
 ```bash
 py-sql-cleaner extract path/to/file.py --out-dir sql
 ```
+
+`extract` skips f-strings and Jinja-like templates. Those strings are completed
+at runtime, so moving them directly into `.sql` files could change behavior.
 
 Format extracted SQL with a database-specific dialect:
 

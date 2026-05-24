@@ -148,12 +148,21 @@ FORMAT AS CSV;
         "select 'COPY' as word from events;",
         "select * from users where note = 'unload complete';",
         'select "COPY" from events;',
+        "select copy, encode from events;",
+        "select iam_role, distkey, sortkey, diststyle from events;",
     ],
 )
 def test_redshift_keyword_detection_ignores_identifiers_and_literals(sql: str) -> None:
     formatted = format_sql(sql)
 
     assert "SELECT" in formatted
+
+
+def test_redshift_distkey_requires_explicit_redshift_dialect() -> None:
+    sql = "create table events (id int) distkey(id);"
+
+    with pytest.raises(FormatterError, match="requires --dialect redshift"):
+        format_sql(sql)
 
 
 def test_unload_is_preserved_even_when_sqlglot_uses_command_fallback() -> None:
