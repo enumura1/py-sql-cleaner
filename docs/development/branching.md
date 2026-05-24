@@ -4,6 +4,22 @@ This repository uses a lightweight GitHub Flow. Keep the model simple:
 `main` is protected, short-lived branches carry changes, and every change lands
 through a pull request.
 
+```mermaid
+gitGraph
+  commit id: "main"s
+  branch feature/add-postgres-dialect
+  checkout feature/add-postgres-dialect
+  commit id: "focused change"
+  commit id: "tests/docs"
+  checkout main
+  merge feature/add-postgres-dialect id: "PR merge"
+  branch fix/preserve-copy-options
+  checkout fix/preserve-copy-options
+  commit id: "bug fix"
+  checkout main
+  merge fix/preserve-copy-options id: "PR merge"
+```
+
 ## Branches
 
 - `main` is the only long-lived branch.
