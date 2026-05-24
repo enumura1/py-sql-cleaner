@@ -6,18 +6,18 @@ through a pull request.
 
 ```mermaid
 gitGraph
-  commit id: "main"s
+  commit id: "main"
   branch feature/add-postgres-dialect
   checkout feature/add-postgres-dialect
-  commit id: "focused change"
-  commit id: "tests/docs"
+  commit id: "focused-change"
+  commit id: "tests-docs"
   checkout main
-  merge feature/add-postgres-dialect id: "PR merge"
+  merge feature/add-postgres-dialect id: "pr-merge-feature"
   branch fix/preserve-copy-options
   checkout fix/preserve-copy-options
-  commit id: "bug fix"
+  commit id: "bug-fix"
   checkout main
-  merge fix/preserve-copy-options id: "PR merge"
+  merge fix/preserve-copy-options id: "pr-merge-fix"
 ```
 
 ## Branches
