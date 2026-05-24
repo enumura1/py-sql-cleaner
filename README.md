@@ -44,7 +44,8 @@ options.
 
 ## Installation
 
-Install `py-sql-cleaner` from PyPI:
+Install `py-sql-cleaner` from
+[PyPI](https://pypi.org/project/py-sql-cleaner/):
 
 ```bash
 pip install py-sql-cleaner

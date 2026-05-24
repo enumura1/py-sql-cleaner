@@ -28,6 +28,7 @@ dependencies = [
 
 [project.urls]
 Documentation = "https://enumura1.github.io/py-sql-cleaner/"
+PyPI = "https://pypi.org/project/py-sql-cleaner/"
 Repository = "https://github.com/enumura1/py-sql-cleaner"
 Issues = "https://github.com/enumura1/py-sql-cleaner/issues"
 
