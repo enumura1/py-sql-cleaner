@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 
 import sqlglot
 from sqlglot.dialects import Dialect
+from sqlglot.tokens import Tokenizer, TokenType
 
 from py_sql_cleaner.domain.config import DEFAULT_BACKEND, DEFAULT_DIALECT
 from py_sql_cleaner.domain.errors import FormatterError
@@ -67,13 +69,27 @@ def _dialect_name(dialect: str) -> str:
 
 
 def _has_redshift_explicit_dialect_keyword(sql: str) -> bool:
-    upper_sql = sql.upper()
-    return any(keyword in upper_sql for keyword in REDSHIFT_EXPLICIT_DIALECT_KEYWORDS)
+    return any(token.text.upper() in REDSHIFT_EXPLICIT_DIALECT_KEYWORDS for token in _word_tokens(sql))
 
 
 def _starts_with_command(sql: str, commands: tuple[str, ...]) -> bool:
-    stripped = sql.lstrip().upper()
-    return any(stripped.startswith(command) for command in commands)
+    first_token = next(iter(_word_tokens(sql)), None)
+    return bool(first_token and first_token.text.upper() in commands)
+
+
+def _word_tokens(sql: str) -> Iterator:
+    return (
+        token
+        for token in Tokenizer().tokenize(sql)
+        if token.token_type not in {TokenType.IDENTIFIER, TokenType.STRING, TokenType.UNKNOWN}
+        and not _is_backtick_quoted_token(sql, token)
+    )
+
+
+def _is_backtick_quoted_token(sql: str, token) -> bool:
+    return token.start > 0 and token.end + 1 < len(sql) and sql[token.start - 1] == "`" and sql[
+        token.end + 1
+    ] == "`"
 
 
 def get_formatter_backend(backend: str) -> FormatterBackend:

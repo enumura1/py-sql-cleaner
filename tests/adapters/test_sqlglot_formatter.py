@@ -140,6 +140,22 @@ FORMAT AS CSV;
         format_sql(sql)
 
 
+@pytest.mark.parametrize(
+    "sql",
+    [
+        "select copy_count from users;",
+        "select encoded_payload from events;",
+        "select 'COPY' as word from events;",
+        "select * from users where note = 'unload complete';",
+        'select "COPY" from events;',
+    ],
+)
+def test_redshift_keyword_detection_ignores_identifiers_and_literals(sql: str) -> None:
+    formatted = format_sql(sql)
+
+    assert "SELECT" in formatted
+
+
 def test_unload_is_preserved_even_when_sqlglot_uses_command_fallback() -> None:
     sql = """
 UNLOAD ('SELECT * FROM users')
