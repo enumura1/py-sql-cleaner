@@ -9,11 +9,27 @@ license-files = ["LICENSE"]
 authors = [
     { name = "enumura1" },
 ]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
     "typer>=0.12",
     "rich>=13",
     "sqlglot>=25",
 ]
+
+[project.urls]
+Documentation = "https://enumura1.github.io/py-sql-cleaner/"
+Repository = "https://github.com/enumura1/py-sql-cleaner"
+Issues = "https://github.com/enumura1/py-sql-cleaner/issues"
 
 [project.optional-dependencies]
 dev = [

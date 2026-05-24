@@ -4,7 +4,8 @@ sidebar_position: 2
 
 # Project Status
 
-`py-sql-cleaner` is currently an early MVP.
+`py-sql-cleaner` is currently an early MVP. The `0.1.x` release line is intended
+for early use and feedback, not long-term compatibility guarantees.
 
 The current focus is:
 
