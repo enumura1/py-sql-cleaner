@@ -79,7 +79,9 @@ Releases are cut from `main`.
 
 1. Merge release preparation changes through a pull request.
 2. Tag the release commit on `main`.
-3. Build and publish artifacts from the tagged commit.
+3. Build artifacts from the tagged commit.
+4. Publish the package to PyPI.
+5. Create a GitHub Release and attach the source distribution and wheel.
 
 Do not release from feature branches.
 

@@ -44,18 +44,20 @@ options.
 
 ## Installation
 
-`py-sql-cleaner` is not published to PyPI yet. PyPI installation will be available
-after the first package release.
+Install `py-sql-cleaner` from PyPI:
 
 ```bash
 pip install py-sql-cleaner
 ```
 
-Or install it as an isolated CLI tool:
+Or install it as an isolated CLI tool with `pipx`:
 
 ```bash
 pipx install py-sql-cleaner
 ```
+
+Release archives and wheels are also attached to
+[GitHub Releases](https://github.com/enumura1/py-sql-cleaner/releases).
 
 You can also run it without installing:
 
