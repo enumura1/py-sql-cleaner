@@ -29,8 +29,8 @@
 .heroGrid {
   position: relative;
   display: grid;
-  gap: 5.2rem;
-  grid-template-columns: minmax(0, 0.92fr) minmax(420px, 1.08fr);
+  gap: 4.2rem;
+  grid-template-columns: minmax(0, 0.84fr) minmax(520px, 1.16fr);
   align-items: center;
 }
 
@@ -280,7 +280,7 @@
 
 .heroAfterGrid {
   display: grid;
-  grid-template-columns: minmax(10rem, 0.68fr) minmax(0, 1.32fr);
+  grid-template-columns: minmax(13.5rem, 0.95fr) minmax(0, 1.05fr);
   gap: 0.65rem;
 }
 

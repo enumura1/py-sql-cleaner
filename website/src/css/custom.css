@@ -53,6 +53,9 @@
   --py-sql-cleaner-command-text: #243044;
   --py-sql-cleaner-command-label: #617087;
   --py-sql-cleaner-detail-border: #dfe6ef;
+  --py-sql-cleaner-navbar-bg: rgb(248 250 252 / 86%);
+  --py-sql-cleaner-navbar-border: rgb(15 23 42 / 9%);
+  --py-sql-cleaner-navbar-link: #253147;
 }
 
 [data-theme='dark'] {
@@ -103,6 +106,56 @@
   --py-sql-cleaner-command-label: #91a2bb;
   --py-sql-cleaner-detail-border: #263650;
   --py-sql-cleaner-grid-dot: rgb(255 255 255 / 6%);
+  --py-sql-cleaner-navbar-bg: rgb(15 23 42 / 82%);
+  --py-sql-cleaner-navbar-border: rgb(255 255 255 / 9%);
+  --py-sql-cleaner-navbar-link: #dce6f6;
+}
+
+.navbar {
+  border-bottom: 1px solid var(--py-sql-cleaner-navbar-border);
+  background: var(--py-sql-cleaner-navbar-bg);
+  box-shadow: none;
+  backdrop-filter: saturate(150%) blur(14px);
+}
+
+.navbar__inner {
+  min-height: 3.4rem;
+}
+
+.navbar__brand {
+  gap: 0.55rem;
+  color: var(--py-sql-cleaner-navbar-link);
+  font-family: var(--py-sql-cleaner-font-display);
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.navbar__logo {
+  width: 1.7rem;
+  height: 1.7rem;
+}
+
+.navbar__title {
+  color: var(--py-sql-cleaner-navbar-link);
+  font-size: 0.98rem;
+}
+
+.navbar__item {
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.navbar__link {
+  color: var(--py-sql-cleaner-navbar-link);
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: var(--py-sql-cleaner-accent-strong);
+}
+
+.navbar-sidebar {
+  background: var(--py-sql-cleaner-band-bg);
 }
 
 .theme-doc-markdown h1 {
