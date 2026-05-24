@@ -106,6 +106,14 @@ const config: Config = {
               href: 'https://github.com/enumura1/py-sql-cleaner',
             },
             {
+              label: 'PyPI',
+              href: 'https://pypi.org/project/py-sql-cleaner/',
+            },
+            {
+              label: 'Releases',
+              href: 'https://github.com/enumura1/py-sql-cleaner/releases',
+            },
+            {
               label: 'Issues',
               href: 'https://github.com/enumura1/py-sql-cleaner/issues',
             },
