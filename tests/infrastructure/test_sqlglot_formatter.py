@@ -1,7 +1,7 @@
 import pytest
 
-from py_sql_cleaner.adapters.sqlglot_formatter import format_sql
 from py_sql_cleaner.domain.errors import FormatterError
+from py_sql_cleaner.infrastructure.sqlglot_formatter import format_sql
 
 
 def test_formats_with_clause() -> None:
@@ -148,12 +148,37 @@ FORMAT AS CSV;
         "select 'COPY' as word from events;",
         "select * from users where note = 'unload complete';",
         'select "COPY" from events;',
+        "select copy, encode from events;",
+        "select iam_role, distkey, sortkey, diststyle from events;",
     ],
 )
 def test_redshift_keyword_detection_ignores_identifiers_and_literals(sql: str) -> None:
     formatted = format_sql(sql)
 
     assert "SELECT" in formatted
+
+
+def test_redshift_distkey_requires_explicit_redshift_dialect() -> None:
+    sql = "create table events (id int) distkey(id);"
+
+    with pytest.raises(FormatterError, match="requires --dialect redshift"):
+        format_sql(sql)
+
+
+def test_redshift_date_part_formatting_is_idempotent() -> None:
+    sql = "select date_part(year, created_at) from users"
+
+    formatted = format_sql(sql, dialect="redshift")
+
+    assert formatted == format_sql(formatted, dialect="redshift")
+
+
+def test_redshift_external_table_is_preserved() -> None:
+    sql = "CREATE EXTERNAL TABLE spectrum.events (id int) STORED AS PARQUET LOCATION '<s3-path>'"
+
+    formatted = format_sql(sql, dialect="redshift")
+
+    assert formatted == sql
 
 
 def test_unload_is_preserved_even_when_sqlglot_uses_command_fallback() -> None:

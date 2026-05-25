@@ -27,8 +27,8 @@ database validation. Redshift command-style statements such as `COPY` and
 options.
 
 > [!NOTE]
-> `py-sql-cleaner` is conservative by default: f-strings and Jinja-like templates are
-> detected but skipped instead of being rewritten.
+> `py-sql-cleaner` is conservative by default: f-strings, Jinja-like templates,
+> and runtime placeholders are detected but skipped instead of being rewritten.
 
 ## Features
 
@@ -37,7 +37,8 @@ options.
 - Replace embedded SQL strings with file references
 - Detect common SQL variable names such as `sql`, `query`, `*_sql`, and
   `*_query`
-- Skip unsafe blocks, including f-strings and Jinja-like templates, by default
+- Skip unsafe blocks, including f-strings, Jinja-like templates, and runtime
+  placeholders, by default
 - Support explicit dialect selection with `--dialect` / `-d`
 - Support `check` mode for CI
 - Support `dry-run` mode before rewriting files
@@ -175,7 +176,7 @@ rewriting them.
 > Skipped blocks are left unchanged. This is intentional: preserving runtime
 > behavior is more important than formatting every SQL-looking string.
 
-Skipped by default:
+Always skipped by `format` and `extract`:
 
 ```python
 query = f"""
@@ -193,6 +194,27 @@ WHERE ds = '{{ ds }}'
 """
 ```
 
+```python
+query = """
+SELECT *
+FROM users
+WHERE user_id = :user_id
+"""
+```
+
+```python
+query = """
+SELECT *
+FROM users
+WHERE user_id = %s
+"""
+```
+
+f-strings, Jinja-like templates, and parameterized SQL are not complete SQL at
+rest. Python, a template engine, or a database driver fills those values at
+runtime, so rewriting or extracting the file contents directly could change
+runtime behavior.
+
 `py-sql-cleaner` does not:
 
 - connect to databases
@@ -203,6 +225,7 @@ WHERE ds = '{{ ds }}'
 - guarantee full database compatibility
 - fully support f-strings
 - fully support Jinja templates
+- rewrite parameterized SQL safely
 - format every possible SQL string
 
 ## Commands
@@ -214,6 +237,8 @@ WHERE ds = '{{ ds }}'
 | `check` | Check whether embedded SQL is formatted | `py-sql-cleaner check jobs/load_users.py` |
 | `extract` | Extract embedded SQL into `.sql` files | `py-sql-cleaner extract jobs/load_users.py --out-dir sql` |
 | `dialects` | List accepted dialect values | `py-sql-cleaner dialects` |
+
+Use `py-sql-cleaner --version` to print the installed CLI version.
 
 ## Documentation
 

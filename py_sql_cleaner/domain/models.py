@@ -15,4 +15,5 @@ class SqlBlock:
     prefix: str
     is_f_string: bool
     has_jinja: bool
+    has_placeholder: bool
     confidence: float

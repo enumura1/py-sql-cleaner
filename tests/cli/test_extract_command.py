@@ -152,3 +152,51 @@ select * from events
     assert file.read_text(encoding="utf-8") == (
         'query = "sql/query.sql"\n\nquery = "sql/query_2.sql"\n'
     )
+
+
+def test_extract_skips_f_string_sql(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    original = '''query = f"""
+select * from users where id = {user_id}
+"""
+'''
+    file.write_text(original, encoding="utf-8")
+
+    result = runner.invoke(app, ["extract", str(file), "--out-dir", "sql"])
+
+    assert result.exit_code == 0, result.output
+    assert file.read_text(encoding="utf-8") == original
+    assert not (tmp_path / "sql").exists()
+    assert "reason=f-string" in result.output
+
+
+def test_extract_skips_jinja_sql(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    original = '''query = """
+select * from users where ds = '{{ ds }}'
+"""
+'''
+    file.write_text(original, encoding="utf-8")
+
+    result = runner.invoke(app, ["extract", str(file), "--out-dir", "sql"])
+
+    assert result.exit_code == 0, result.output
+    assert file.read_text(encoding="utf-8") == original
+    assert not (tmp_path / "sql").exists()
+    assert "reason=jinja" in result.output
+
+
+def test_extract_skips_runtime_placeholder_sql(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    original = '''query = """
+select * from users where id = :user_id
+"""
+'''
+    file.write_text(original, encoding="utf-8")
+
+    result = runner.invoke(app, ["extract", str(file), "--out-dir", "sql"])
+
+    assert result.exit_code == 0, result.output
+    assert file.read_text(encoding="utf-8") == original
+    assert not (tmp_path / "sql").exists()
+    assert "reason=placeholder" in result.output

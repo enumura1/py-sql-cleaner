@@ -11,16 +11,14 @@ from py_sql_cleaner.domain.config import DEFAULT_BACKEND, DEFAULT_DIALECT
 from py_sql_cleaner.domain.errors import FormatterError
 
 SUPPORTED_DIALECTS = ("generic", "mysql", "postgres", "redshift")
-REDSHIFT_EXPLICIT_DIALECT_KEYWORDS = (
-    "COPY",
-    "UNLOAD",
-    "IAM_ROLE",
+REDSHIFT_TABLE_OPTION_KEYWORDS = (
     "DISTKEY",
     "SORTKEY",
     "DISTSTYLE",
-    "ENCODE",
 )
 REDSHIFT_PRESERVE_COMMANDS = ("COPY", "UNLOAD")
+REDSHIFT_PRESERVE_PREFIXES = (("CREATE", "EXTERNAL", "TABLE"),)
+REDSHIFT_COLUMN_OPTION_KEYWORDS = ("ENCODE",)
 
 
 class FormatterBackend(ABC):
@@ -34,13 +32,11 @@ class SqlglotFormatter(FormatterBackend):
         dialect = normalize_dialect(dialect)
         if not dialect and _has_redshift_explicit_dialect_keyword(sql):
             raise FormatterError("redshift-specific SQL requires --dialect redshift")
-        if _dialect_name(dialect) == "redshift" and _starts_with_command(
-            sql, REDSHIFT_PRESERVE_COMMANDS
-        ):
+        dialect_name = _dialect_name(dialect)
+        if dialect_name == "redshift" and _should_preserve_redshift_statement(sql):
             return sql.strip()
         try:
-            expressions = sqlglot.parse(sql, read=dialect)
-            formatted = ";\n\n".join(expr.sql(dialect=dialect, pretty=True) for expr in expressions)
+            formatted = _format_with_sqlglot(sql, dialect)
         except Exception as exc:
             raise FormatterError(str(exc)) from exc
 
@@ -68,15 +64,67 @@ def _dialect_name(dialect: str) -> str:
     return dialect.split(",", maxsplit=1)[0].strip().lower()
 
 
+def _format_with_sqlglot(sql: str, dialect: str) -> str:
+    formatted = _format_once(sql, dialect)
+    stable = _format_once(formatted, dialect)
+    return stable
+
+
+def _format_once(sql: str, dialect: str) -> str:
+    expressions = sqlglot.parse(sql, read=dialect)
+    return ";\n\n".join(expr.sql(dialect=dialect, pretty=True) for expr in expressions)
+
+
+def _should_preserve_redshift_statement(sql: str) -> bool:
+    tokens = list(_word_tokens(sql))
+    if _starts_with_command_tokens(tokens, REDSHIFT_PRESERVE_COMMANDS):
+        return True
+    return any(_starts_with_phrase(tokens, prefix) for prefix in REDSHIFT_PRESERVE_PREFIXES)
+
+
 def _has_redshift_explicit_dialect_keyword(sql: str) -> bool:
+    tokens = list(_word_tokens(sql))
+    if _starts_with_command_tokens(tokens, REDSHIFT_PRESERVE_COMMANDS):
+        return True
     return any(
-        token.text.upper() in REDSHIFT_EXPLICIT_DIALECT_KEYWORDS for token in _word_tokens(sql)
+        _is_redshift_explicit_dialect_token(tokens, index)
+        for index, token in enumerate(tokens)
+        if token.text.upper() in REDSHIFT_TABLE_OPTION_KEYWORDS + REDSHIFT_COLUMN_OPTION_KEYWORDS
     )
 
 
 def _starts_with_command(sql: str, commands: tuple[str, ...]) -> bool:
-    first_token = next(iter(_word_tokens(sql)), None)
+    return _starts_with_command_tokens(list(_word_tokens(sql)), commands)
+
+
+def _starts_with_command_tokens(tokens: list, commands: tuple[str, ...]) -> bool:
+    first_token = next(iter(tokens), None)
     return bool(first_token and first_token.text.upper() in commands)
+
+
+def _starts_with_phrase(tokens: list, phrase: tuple[str, ...]) -> bool:
+    if len(tokens) < len(phrase):
+        return False
+    return all(tokens[index].text.upper() == word for index, word in enumerate(phrase))
+
+
+def _is_redshift_explicit_dialect_token(tokens: list, index: int) -> bool:
+    token_text = tokens[index].text.upper()
+    if token_text in REDSHIFT_TABLE_OPTION_KEYWORDS:
+        return _looks_like_table_option(tokens, index)
+    if token_text in REDSHIFT_COLUMN_OPTION_KEYWORDS:
+        return _looks_like_table_option(tokens, index)
+    return False
+
+
+def _looks_like_table_option(tokens: list, index: int) -> bool:
+    previous_token = tokens[index - 1].text.upper() if index > 0 else ""
+    next_token = tokens[index + 1].text.upper() if index + 1 < len(tokens) else ""
+    return previous_token not in {"", ",", "SELECT", "AS"} and next_token not in {
+        "",
+        ",",
+        "FROM",
+    }
 
 
 def _word_tokens(sql: str) -> Iterator:
