@@ -34,13 +34,18 @@ Detected variable names include:
 - `SELECT`
 - `WITH`
 - `INSERT`
+- `REPLACE`
 - `UPDATE`
 - `DELETE`
+- `TRUNCATE`
 - `COPY`
 - `UNLOAD`
 - `QUALIFY`
 - `CREATE`
 - `MERGE`
+- `VACUUM`
+- `ANALYZE`
+- `GRANT`
 
 Redshift command-style statements such as `COPY` and `UNLOAD` should be run with
 `-d redshift`. They are detected and preserved rather than reformatted.
@@ -51,8 +56,8 @@ Redshift command-style statements such as `COPY` and `UNLOAD` should be run with
 query = "SELECT * FROM users"
 ```
 
-f-strings and Jinja-like templates are detected but skipped by `format` and
-`extract`:
+f-strings, Jinja-like templates, and runtime placeholders are detected but
+skipped by `format` and `extract`:
 
 ```python
 query = f"""
@@ -70,5 +75,22 @@ WHERE ds = '{{ ds }}'
 """
 ```
 
-Single-line strings, deep Airflow parsing, full f-string handling, and full
-Jinja handling are outside the current MVP scope.
+```python
+query = """
+SELECT *
+FROM users
+WHERE user_id = :user_id
+"""
+```
+
+```python
+query = """
+SELECT *
+FROM users
+WHERE user_id = %s
+"""
+```
+
+Single-line strings, deep Airflow parsing, full f-string handling, full Jinja
+handling, and safe parameterized SQL rewriting are outside the current MVP
+scope.

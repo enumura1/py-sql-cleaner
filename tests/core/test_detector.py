@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from py_sql_cleaner.core.detector import detect_sql_blocks
+from py_sql_cleaner.core.detector import detect_sql_blocks, has_runtime_placeholder
 
 
 def test_detects_triple_quoted_query_assignment() -> None:
@@ -65,6 +65,42 @@ select * from users where ds = '{{ ds }}'
     assert blocks[0].has_jinja is True
 
 
+def test_marks_runtime_placeholders() -> None:
+    source = '''query = """
+select * from users where id = :user_id and status = %s
+"""
+'''
+
+    blocks = detect_sql_blocks(Path("foo.py"), source)
+
+    assert len(blocks) == 1
+    assert blocks[0].has_placeholder is True
+
+
+def test_marks_pyformat_runtime_placeholder() -> None:
+    source = '''query = """
+select * from users where id = %(user_id)s
+"""
+'''
+
+    blocks = detect_sql_blocks(Path("foo.py"), source)
+
+    assert len(blocks) == 1
+    assert blocks[0].has_placeholder is True
+
+
+def test_placeholder_detection_ignores_literals_comments_and_postgres_casts() -> None:
+    sql = """
+select created_at::date as day, ':literal' as value
+from events
+where note = '100%s'
+-- where id = :commented
+/* where id = %(commented)s */
+"""
+
+    assert has_runtime_placeholder(sql) is False
+
+
 def test_detects_redshift_copy_statement() -> None:
     source = '''query = """
 COPY users
@@ -96,6 +132,17 @@ def test_detects_mysql_backtick_statement() -> None:
     source = '''query = """
 select `user_id`
 from `users`
+"""
+'''
+
+    blocks = detect_sql_blocks(Path("foo.py"), source)
+
+    assert len(blocks) == 1
+
+
+def test_detects_command_style_sql_from_query_variable() -> None:
+    source = '''query = """
+truncate table staging_users
 """
 '''
 

@@ -83,6 +83,8 @@ def _unsafe_extract_reason(block: SqlBlock) -> str | None:
         return "f-string"
     if block.has_jinja:
         return "jinja"
+    if block.has_placeholder:
+        return "placeholder"
     return None
 
 

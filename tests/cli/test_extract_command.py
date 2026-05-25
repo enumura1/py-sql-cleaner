@@ -184,3 +184,19 @@ select * from users where ds = '{{ ds }}'
     assert file.read_text(encoding="utf-8") == original
     assert not (tmp_path / "sql").exists()
     assert "reason=jinja" in result.output
+
+
+def test_extract_skips_runtime_placeholder_sql(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    original = '''query = """
+select * from users where id = :user_id
+"""
+'''
+    file.write_text(original, encoding="utf-8")
+
+    result = runner.invoke(app, ["extract", str(file), "--out-dir", "sql"])
+
+    assert result.exit_code == 0, result.output
+    assert file.read_text(encoding="utf-8") == original
+    assert not (tmp_path / "sql").exists()
+    assert "reason=placeholder" in result.output

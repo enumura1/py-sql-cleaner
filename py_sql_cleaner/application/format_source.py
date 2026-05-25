@@ -7,7 +7,7 @@ from py_sql_cleaner.core.rewriter import replace_sql_content
 from py_sql_cleaner.domain.errors import FormatterError
 from py_sql_cleaner.domain.models import SqlBlock
 
-ALWAYS_SKIP_UNSAFE_REASONS = {"f-string", "jinja"}
+ALWAYS_SKIP_UNSAFE_REASONS = {"f-string", "jinja", "placeholder"}
 
 
 @dataclass(frozen=True)
@@ -54,6 +54,8 @@ def unsafe_reason(block: SqlBlock) -> str | None:
         return "f-string"
     if block.has_jinja:
         return "jinja"
+    if block.has_placeholder:
+        return "placeholder"
     return None
 
 

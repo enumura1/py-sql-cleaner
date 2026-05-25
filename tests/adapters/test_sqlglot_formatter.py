@@ -165,6 +165,22 @@ def test_redshift_distkey_requires_explicit_redshift_dialect() -> None:
         format_sql(sql)
 
 
+def test_redshift_date_part_formatting_is_idempotent() -> None:
+    sql = "select date_part(year, created_at) from users"
+
+    formatted = format_sql(sql, dialect="redshift")
+
+    assert formatted == format_sql(formatted, dialect="redshift")
+
+
+def test_redshift_external_table_is_preserved() -> None:
+    sql = "CREATE EXTERNAL TABLE spectrum.events (id int) STORED AS PARQUET LOCATION '<s3-path>'"
+
+    formatted = format_sql(sql, dialect="redshift")
+
+    assert formatted == sql
+
+
 def test_unload_is_preserved_even_when_sqlglot_uses_command_fallback() -> None:
     sql = """
 UNLOAD ('SELECT * FROM users')

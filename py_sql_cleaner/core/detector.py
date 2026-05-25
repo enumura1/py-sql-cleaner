@@ -12,8 +12,10 @@ SQL_KEYWORDS = (
     "SELECT",
     "WITH",
     "INSERT",
+    "REPLACE",
     "UPDATE",
     "DELETE",
+    "TRUNCATE",
     "CREATE",
     "ALTER",
     "DROP",
@@ -21,6 +23,9 @@ SQL_KEYWORDS = (
     "UNLOAD",
     "QUALIFY",
     "MERGE",
+    "VACUUM",
+    "ANALYZE",
+    "GRANT",
     "FROM",
     "JOIN",
     "WHERE",
@@ -43,6 +48,10 @@ SQL_VARIABLE_RE = re.compile(r"^(sql|query|.*_sql|.*_query)$")
 TRIPLE_STRING_RE = re.compile(
     r"(?is)^(?P<prefix>[rubf]*)?(?P<quote>'''|\"\"\")(?P<body>.*)(?P=quote)$"
 )
+NAMED_PLACEHOLDER_RE = re.compile(r"(?<!:):[A-Za-z_][A-Za-z0-9_]*")
+NUMERIC_PLACEHOLDER_RE = re.compile(r"(?<!:):[0-9]+")
+PYFORMAT_PLACEHOLDER_RE = re.compile(r"%\([A-Za-z_][A-Za-z0-9_]*\)s")
+FORMAT_PLACEHOLDER_RE = re.compile(r"(?<!%)%s")
 
 
 def detect_sql_blocks(file_path: Path, source: str) -> list[SqlBlock]:
@@ -81,6 +90,7 @@ def detect_sql_blocks(file_path: Path, source: str) -> list[SqlBlock]:
                     prefix=prefix,
                     is_f_string=True,
                     has_jinja="{{" in raw_sql or "{%" in raw_sql,
+                    has_placeholder=has_runtime_placeholder(raw_sql),
                     confidence=confidence,
                 )
             )
@@ -113,11 +123,67 @@ def detect_sql_blocks(file_path: Path, source: str) -> list[SqlBlock]:
                 prefix=prefix,
                 is_f_string="f" in lower_prefix,
                 has_jinja="{{" in raw_sql or "{%" in raw_sql,
+                has_placeholder=has_runtime_placeholder(raw_sql),
                 confidence=confidence,
             )
         )
 
     return blocks
+
+
+def has_runtime_placeholder(sql: str) -> bool:
+    sql_without_literals = _remove_string_literals_and_comments(sql)
+    return any(
+        pattern.search(sql_without_literals)
+        for pattern in (
+            PYFORMAT_PLACEHOLDER_RE,
+            FORMAT_PLACEHOLDER_RE,
+            NAMED_PLACEHOLDER_RE,
+            NUMERIC_PLACEHOLDER_RE,
+        )
+    )
+
+
+def _remove_string_literals_and_comments(sql: str) -> str:
+    result: list[str] = []
+    index = 0
+    while index < len(sql):
+        char = sql[index]
+        next_char = sql[index + 1] if index + 1 < len(sql) else ""
+
+        if char in {"'", '"'}:
+            quote = char
+            result.append(" ")
+            index += 1
+            while index < len(sql):
+                if sql[index] == quote:
+                    if index + 1 < len(sql) and sql[index + 1] == quote:
+                        index += 2
+                        continue
+                    index += 1
+                    break
+                index += 2 if sql[index] == "\\" else 1
+            continue
+
+        if char == "-" and next_char == "-":
+            result.append(" ")
+            index += 2
+            while index < len(sql) and sql[index] != "\n":
+                index += 1
+            continue
+
+        if char == "/" and next_char == "*":
+            result.append(" ")
+            index += 2
+            while index + 1 < len(sql) and not (sql[index] == "*" and sql[index + 1] == "/"):
+                index += 1
+            index += 2
+            continue
+
+        result.append(char)
+        index += 1
+
+    return "".join(result)
 
 
 def _parse_triple_string_token(token_string: str) -> tuple[str, str, str] | None:
