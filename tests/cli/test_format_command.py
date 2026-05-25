@@ -1,5 +1,6 @@
 from typer.testing import CliRunner
 
+from py_sql_cleaner import __version__
 from py_sql_cleaner.cli import app
 
 runner = CliRunner()
@@ -9,7 +10,7 @@ def test_version_option_prints_package_version() -> None:
     result = runner.invoke(app, ["--version"])
 
     assert result.exit_code == 0, result.output
-    assert "py-sql-cleaner 0.1.0" in result.output
+    assert f"py-sql-cleaner {__version__}" in result.output
 
 
 def test_format_command_rewrites_embedded_sql(tmp_path) -> None:
@@ -210,7 +211,7 @@ select * from users
     result = runner.invoke(app, ["check", str(file)])
 
     assert result.exit_code == 1
-    assert "Found unformatted embedded SQL" in result.output
+    assert "Found unformatted embedded SQL." in result.output
 
 
 def test_format_skips_jinja_sql(tmp_path) -> None:

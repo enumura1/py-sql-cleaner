@@ -105,12 +105,7 @@ def format_command(
         raise typer.Exit(1 if not write and changed else 0)
     if not write:
         if changed:
-            console.print("Found unformatted embedded SQL:")
-            for block in result.blocks:
-                console.print(
-                    f"- {block.file_path}:{block.start_line}-{block.end_line} "
-                    f"variable={block.variable_name or '-'}"
-                )
+            console.print("Found unformatted embedded SQL.")
             raise typer.Exit(1)
         raise typer.Exit(0)
 
