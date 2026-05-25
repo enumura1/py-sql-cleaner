@@ -1,23 +1,59 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
+from py_sql_cleaner.application.inspect_sql import SqlBlockReport, sql_block_report
 from py_sql_cleaner.application.ports import SqlFormatter
-from py_sql_cleaner.core.rewriter import replace_sql_content
+from py_sql_cleaner.domain.detector import detect_sql_blocks
 from py_sql_cleaner.domain.errors import FormatterError
 from py_sql_cleaner.domain.models import SqlBlock
-
-ALWAYS_SKIP_UNSAFE_REASONS = {"f-string", "jinja", "placeholder"}
+from py_sql_cleaner.domain.rewriter import replace_sql_content
+from py_sql_cleaner.domain.safety import ALWAYS_SKIP_UNSAFE_REASONS, unsafe_reason
 
 
 @dataclass(frozen=True)
 class FormatSourceResult:
     source: str
+    blocks: list[SqlBlockReport]
     warnings: list[str]
     errors: list[str]
 
 
 def format_source(
+    source_file: Path,
+    source: str,
+    *,
+    dialect: str,
+    backend: str,
+    include_unsafe: bool,
+    formatter: SqlFormatter,
+) -> FormatSourceResult:
+    blocks = detect_sql_blocks(source_file, source)
+    result = _format_blocks(
+        source,
+        blocks,
+        dialect=dialect,
+        backend=backend,
+        include_unsafe=include_unsafe,
+        formatter=formatter,
+    )
+    return FormatSourceResult(
+        source=result.source,
+        blocks=[sql_block_report(block) for block in blocks],
+        warnings=result.warnings,
+        errors=result.errors,
+    )
+
+
+@dataclass(frozen=True)
+class _FormatBlocksResult:
+    source: str
+    warnings: list[str]
+    errors: list[str]
+
+
+def _format_blocks(
     source: str,
     blocks: list[SqlBlock],
     *,
@@ -25,7 +61,7 @@ def format_source(
     backend: str,
     include_unsafe: bool,
     formatter: SqlFormatter,
-) -> FormatSourceResult:
+) -> _FormatBlocksResult:
     warnings: list[str] = []
     errors: list[str] = []
     new_source = source
@@ -46,18 +82,4 @@ def format_source(
             )
             continue
         new_source = replace_sql_content(new_source, block, formatted)
-    return FormatSourceResult(source=new_source, warnings=warnings, errors=errors)
-
-
-def unsafe_reason(block: SqlBlock) -> str | None:
-    if block.is_f_string:
-        return "f-string"
-    if block.has_jinja:
-        return "jinja"
-    if block.has_placeholder:
-        return "placeholder"
-    return None
-
-
-def is_unsafe(block: SqlBlock) -> bool:
-    return unsafe_reason(block) is not None
+    return _FormatBlocksResult(source=new_source, warnings=warnings, errors=errors)

@@ -3,11 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from py_sql_cleaner.application.inspect_sql import SqlBlockReport, sql_block_report
 from py_sql_cleaner.application.ports import SqlFormatter
-from py_sql_cleaner.core.extractor import build_sql_file_name
-from py_sql_cleaner.core.rewriter import replace_sql_block_with_reference
+from py_sql_cleaner.domain.detector import detect_sql_blocks
 from py_sql_cleaner.domain.errors import FormatterError
+from py_sql_cleaner.domain.extractor import build_sql_file_name
 from py_sql_cleaner.domain.models import SqlBlock
+from py_sql_cleaner.domain.rewriter import replace_sql_block_with_reference
+from py_sql_cleaner.domain.safety import unsafe_reason as unsafe_block_reason
 
 
 @dataclass(frozen=True)
@@ -20,6 +23,7 @@ class ExtractedSql:
 @dataclass(frozen=True)
 class ExtractPlan:
     source: str
+    blocks: list[SqlBlockReport]
     replacements: list[ExtractedSql]
     warnings: list[str]
 
@@ -27,7 +31,6 @@ class ExtractPlan:
 def plan_extract(
     source_file: Path,
     source: str,
-    blocks: list[SqlBlock],
     *,
     out_dir: Path,
     dialect: str,
@@ -36,13 +39,17 @@ def plan_extract(
     name: str | None,
     formatter: SqlFormatter,
 ) -> ExtractPlan:
+    blocks = detect_sql_blocks(source_file, source)
+    if name and len(blocks) > 1:
+        raise ValueError("--name can only be used when exactly one SQL block is detected.")
+
     output_dir = out_dir if out_dir.is_absolute() else source_file.parent / out_dir
     warnings: list[str] = []
     replacements: list[ExtractedSql] = []
     planned_paths: set[Path] = set()
 
     for block in blocks:
-        unsafe_reason = _unsafe_extract_reason(block)
+        unsafe_reason = unsafe_block_reason(block)
         if unsafe_reason:
             warnings.append(
                 f"Skipped unsafe SQL block {source_file}:{block.start_line}-{block.end_line} "
@@ -75,17 +82,12 @@ def plan_extract(
             replace_mode=replace_mode,
         )
 
-    return ExtractPlan(source=new_source, replacements=replacements, warnings=warnings)
-
-
-def _unsafe_extract_reason(block: SqlBlock) -> str | None:
-    if block.is_f_string:
-        return "f-string"
-    if block.has_jinja:
-        return "jinja"
-    if block.has_placeholder:
-        return "placeholder"
-    return None
+    return ExtractPlan(
+        source=new_source,
+        blocks=[sql_block_report(block) for block in blocks],
+        replacements=replacements,
+        warnings=warnings,
+    )
 
 
 def unique_planned_sql_path(out_dir: Path, file_name: str, planned_paths: set[Path]) -> Path:

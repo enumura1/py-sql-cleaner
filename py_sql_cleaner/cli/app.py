@@ -8,17 +8,18 @@ import typer
 from rich.console import Console
 
 from py_sql_cleaner import __version__
-from py_sql_cleaner.adapters.sqlglot_formatter import (
+from py_sql_cleaner.application.extract_sql import plan_extract
+from py_sql_cleaner.application.format_source import format_source
+from py_sql_cleaner.application.inspect_sql import inspect_sql_blocks
+from py_sql_cleaner.infrastructure.sqlglot_formatter import (
+    DEFAULT_BACKEND,
+    DEFAULT_DIALECT,
     SUPPORTED_DIALECTS,
+    FormatterError,
     format_sql,
     get_formatter_backend,
     normalize_dialect,
 )
-from py_sql_cleaner.application.extract_sql import plan_extract
-from py_sql_cleaner.application.format_source import format_source, is_unsafe
-from py_sql_cleaner.core.detector import detect_sql_blocks
-from py_sql_cleaner.domain.config import DEFAULT_BACKEND, DEFAULT_DIALECT
-from py_sql_cleaner.domain.errors import FormatterError
 
 app = typer.Typer(no_args_is_help=True)
 console = Console()
@@ -43,7 +44,7 @@ def main(
 @app.command("list")
 def list_blocks(file: Annotated[Path, typer.Argument(exists=True, dir_okay=False)]) -> None:
     source = file.read_text(encoding="utf-8")
-    blocks = detect_sql_blocks(file, source)
+    blocks = inspect_sql_blocks(file, source)
     if not blocks:
         console.print("No embedded SQL blocks found.")
         return
@@ -54,7 +55,7 @@ def list_blocks(file: Annotated[Path, typer.Argument(exists=True, dir_okay=False
         console.print(f"{number}. {block.file_path}:{block.start_line}-{block.end_line}")
         console.print(f"   variable: {block.variable_name or '-'}")
         console.print(f"   confidence: {block.confidence:.2f}")
-        console.print(f"   unsafe: {str(is_unsafe(block)).lower()}")
+        console.print(f"   unsafe: {str(block.unsafe).lower()}")
 
 
 @app.command("format")
@@ -75,15 +76,11 @@ def format_command(
 ) -> None:
     _validate_formatter_options(dialect, backend)
     source = file.read_text(encoding="utf-8")
-    blocks = detect_sql_blocks(file, source)
-    if not blocks:
-        console.print("No embedded SQL blocks found.")
-        raise typer.Exit(0)
 
     try:
         result = format_source(
+            file,
             source,
-            blocks,
             dialect=dialect,
             backend=backend,
             include_unsafe=include_unsafe,
@@ -98,6 +95,9 @@ def format_command(
         console.print(f"Error: {error}")
     if result.errors:
         raise typer.Exit(1)
+    if not result.blocks:
+        console.print("No embedded SQL blocks found.")
+        raise typer.Exit(0)
 
     changed = result.source != source
     if dry_run:
@@ -106,7 +106,7 @@ def format_command(
     if not write:
         if changed:
             console.print("Found unformatted embedded SQL:")
-            for block in blocks:
+            for block in result.blocks:
                 console.print(
                     f"- {block.file_path}:{block.start_line}-{block.end_line} "
                     f"variable={block.variable_name or '-'}"
@@ -154,19 +154,11 @@ def extract_command(
 ) -> None:
     _validate_formatter_options(dialect, backend)
     source = file.read_text(encoding="utf-8")
-    blocks = detect_sql_blocks(file, source)
-    if not blocks:
-        console.print("No embedded SQL blocks found.")
-        raise typer.Exit(0)
-    if name and len(blocks) > 1:
-        console.print("Error: --name can only be used when exactly one SQL block is detected.")
-        raise typer.Exit(1)
 
     try:
         result = plan_extract(
             file,
             source,
-            blocks,
             out_dir=out_dir,
             dialect=dialect,
             backend=backend,
@@ -174,9 +166,15 @@ def extract_command(
             name=name,
             formatter=format_sql,
         )
+    except ValueError as exc:
+        console.print(f"Error: {exc}")
+        raise typer.Exit(1) from exc
     except FormatterError as exc:
         console.print(f"Error: {exc}")
         raise typer.Exit(1) from exc
+    if not result.blocks:
+        console.print("No embedded SQL blocks found.")
+        raise typer.Exit(0)
     for warning in result.warnings:
         console.print(f"Warning: {warning}")
 

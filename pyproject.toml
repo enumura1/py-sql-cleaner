@@ -68,8 +68,7 @@ type = "layers"
 layers = [
     "py_sql_cleaner.cli",
     "py_sql_cleaner.application",
-    "py_sql_cleaner.adapters",
-    "py_sql_cleaner.core",
+    "py_sql_cleaner.infrastructure",
     "py_sql_cleaner.domain",
 ]
 
@@ -80,45 +79,40 @@ source_modules = ["py_sql_cleaner.domain"]
 forbidden_modules = [
     "py_sql_cleaner.cli",
     "py_sql_cleaner.application",
-    "py_sql_cleaner.adapters",
-    "py_sql_cleaner.core",
+    "py_sql_cleaner.infrastructure",
     "typer",
     "rich",
     "sqlglot",
 ]
 
 [[tool.importlinter.contracts]]
-name = "Application receives adapters through ports"
+name = "Application receives infrastructure through ports"
 type = "forbidden"
 source_modules = ["py_sql_cleaner.application"]
 forbidden_modules = [
-    "py_sql_cleaner.adapters",
+    "py_sql_cleaner.infrastructure",
     "typer",
     "rich",
     "sqlglot",
 ]
 
 [[tool.importlinter.contracts]]
-name = "Adapters do not depend on use cases"
+name = "Infrastructure does not depend on use cases"
 type = "forbidden"
-source_modules = ["py_sql_cleaner.adapters"]
+source_modules = ["py_sql_cleaner.infrastructure"]
 forbidden_modules = [
     "py_sql_cleaner.cli",
     "py_sql_cleaner.application",
-    "py_sql_cleaner.core",
     "typer",
     "rich",
 ]
 
 [[tool.importlinter.contracts]]
-name = "Core is CLI independent"
+name = "CLI does not call domain directly"
 type = "forbidden"
-source_modules = ["py_sql_cleaner.core"]
-forbidden_modules = [
-    "py_sql_cleaner.cli",
-    "typer",
-    "rich",
-]
+source_modules = ["py_sql_cleaner.cli"]
+forbidden_modules = ["py_sql_cleaner.domain"]
+allow_indirect_imports = true
 
 [build-system]
 requires = ["hatchling"]

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from py_sql_cleaner.core.detector import detect_sql_blocks, has_runtime_placeholder
+from py_sql_cleaner.domain.detector import detect_sql_blocks, has_runtime_placeholder
 
 
 def test_detects_triple_quoted_query_assignment() -> None:
