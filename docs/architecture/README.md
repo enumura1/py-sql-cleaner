@@ -32,10 +32,6 @@ interface -> application -> domain
 interface -> infrastructure -> external dependency
 ```
 
-The project does not have a repository layer because it does not own a database,
-ORM, queue, or external service client. File reads/writes are command-line I/O
-and stay at the `cli` boundary.
-
 ## Layers
 
 ### `cli`
@@ -111,20 +107,9 @@ The CLI injects the concrete SQLGlot formatter from infrastructure when it calls
 the use case. This keeps application logic independent from SQLGlot while
 avoiding a DI container or stateful formatter object.
 
-This is also the project's dependency-inversion point. Application code defines
-the formatter shape it needs; infrastructure code adapts SQLGlot to that shape;
-CLI wires the concrete function into the use case.
-
-The formatter is injected as a function because it has no long-lived state:
-
-- no database connection
-- no credentials
-- no transaction
-- no cache
-- no close/dispose lifecycle
-
-If a future formatter needs state, it can be passed as an object that implements
-the same callable shape.
+This is the project's dependency-inversion point: application code defines the
+formatter shape it needs, infrastructure adapts SQLGlot to that shape, and CLI
+wires the concrete function into the use case.
 
 ## Harness
 
