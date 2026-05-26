@@ -1,6 +1,6 @@
 [project]
 name = "py-sql-cleaner"
-version = "0.1.0"
+version = "0.1.1"
 description = "Find, format, and extract SQL embedded in Python files."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -35,6 +35,7 @@ Issues = "https://github.com/enumura1/py-sql-cleaner/issues"
 [project.optional-dependencies]
 dev = [
     "build>=1.2",
+    "hatchling>=1.25",
     "import-linter>=2",
     "pytest>=8",
     "ruff>=0.8",
@@ -113,6 +114,20 @@ type = "forbidden"
 source_modules = ["py_sql_cleaner.cli"]
 forbidden_modules = ["py_sql_cleaner.domain"]
 allow_indirect_imports = true
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "/.claude",
+    "/.import_linter_cache",
+    "/.pytest_cache",
+    "/.ruff_cache",
+    "/.venv",
+    "/dist",
+    "/website/.docusaurus",
+    "/website/build",
+    "/website/node_modules",
+    "**/__pycache__",
+]
 
 [build-system]
 requires = ["hatchling"]

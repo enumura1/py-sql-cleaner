@@ -10,5 +10,6 @@ if [ -f website/package.json ]; then
   (cd website && npm run build)
 fi
 
+rm -rf dist
 .venv/bin/python -m build
 .venv/bin/python -m twine check dist/*

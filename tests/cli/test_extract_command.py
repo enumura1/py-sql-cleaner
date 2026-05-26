@@ -130,6 +130,25 @@ select * from users
     assert "requires `from pathlib import Path`" in result.output
 
 
+def test_extract_accepts_absolute_out_dir(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    out_dir = tmp_path.parent / f"{tmp_path.name}_sql"
+    file.write_text(
+        '''query = """
+select * from users
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["extract", str(file), "--out-dir", str(out_dir)])
+
+    assert result.exit_code == 0, result.output
+    sql_file = out_dir / "query.sql"
+    assert sql_file.exists()
+    assert file.read_text(encoding="utf-8") == f'query = "{sql_file.as_posix()}"\n'
+
+
 def test_extract_avoids_name_collisions_within_same_run(tmp_path) -> None:
     file = tmp_path / "foo.py"
     file.write_text(

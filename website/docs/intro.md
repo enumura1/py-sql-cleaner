@@ -27,9 +27,9 @@ file.
 `py-sql-cleaner` is an early MVP. It uses SQLGlot internally for best-effort SQL
 formatting. It does not connect to databases and does not execute SQL.
 Dialect support means SQLGlot parser/formatter mode selection, not exhaustive
-database validation. Redshift command-style statements such as `COPY` and
-`UNLOAD` are preserved rather than reformatted to avoid changing load/export
-options.
+database validation. With `-d redshift`, Redshift command-style statements such
+as `COPY` and `UNLOAD` are preserved rather than reformatted to avoid changing
+load/export options.
 :::
 
 ## What It Helps With
