@@ -1,8 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#f7f8fb"/>
-  <rect x="90" y="90" width="1020" height="450" rx="28" fill="#101826"/>
-  <text x="150" y="220" fill="#9ee7d8" font-family="Arial, sans-serif" font-size="54" font-weight="700">py-sql-cleaner</text>
-  <text x="150" y="305" fill="#ffffff" font-family="Arial, sans-serif" font-size="48" font-weight="700">Find, format, and extract embedded SQL</text>
-  <text x="150" y="380" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="34">embedded in Python files</text>
-  <text x="150" y="460" fill="#8fa6ff" font-family="Arial, sans-serif" font-size="30">Python-focused • SQLGlot-powered • conservative by default</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">py-sql-cleaner social card</title>
+  <desc id="desc">Find, format, and extract SQL embedded in Python files.</desc>
+  <defs>
+    <linearGradient id="card-bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f7fbff"/>
+      <stop offset="0.5" stop-color="#eef8f6"/>
+      <stop offset="1" stop-color="#f8fafc"/>
+    </linearGradient>
+    <linearGradient id="mark-bg" x1="760" y1="125" x2="1080" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#223a8a"/>
+      <stop offset="0.58" stop-color="#1f6f8f"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#0f172a" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#card-bg)"/>
+  <path d="M0 520c168-62 325-74 472-36 178 47 340 42 486-15 87-34 168-45 242-33v194H0z" fill="#dff7f1"/>
+  <path d="M0 548c172-44 329-45 472-2 178 54 339 48 482-19 86-40 169-56 246-49v152H0z" fill="#c7ede6"/>
+
+  <g transform="translate(92 98)">
+    <text x="0" y="58" fill="#0f766e" font-family="Arial, sans-serif" font-size="38" font-weight="700">
+      Python embedded SQL cleanup
+    </text>
+    <text x="0" y="150" fill="#111827" font-family="Arial, sans-serif" font-size="82" font-weight="800">
+      py-sql-cleaner
+    </text>
+    <text x="0" y="235" fill="#243447" font-family="Arial, sans-serif" font-size="44" font-weight="700">
+      Find, format, and extract SQL
+    </text>
+    <text x="0" y="294" fill="#52616f" font-family="Arial, sans-serif" font-size="36">
+      embedded in Python triple-quoted strings
+    </text>
+    <g transform="translate(0 365)">
+      <rect width="650" height="72" rx="14" fill="#101826"/>
+      <text x="30" y="47" fill="#9ee7d8" font-family="'JetBrains Mono', 'SFMono-Regular', monospace" font-size="26">
+        py-sql-cleaner format jobs.py
+      </text>
+    </g>
+  </g>
+
+  <g filter="url(#soft-shadow)" transform="translate(776 124)">
+    <rect width="300" height="300" rx="56" fill="url(#mark-bg)"/>
+    <path d="M66 50h126l48 48v152H66z" fill="#f8fafc"/>
+    <path d="M192 50v48h48z" fill="#c7ede6"/>
+    <path d="M94 98h60M94 128h98M94 158h76" stroke="#7aa6b0" stroke-width="14" stroke-linecap="round"/>
+    <path d="M94 190h44M94 220h74" stroke="#0f766e" stroke-width="14" stroke-linecap="round"/>
+    <rect x="142" y="178" width="92" height="58" rx="14" fill="#101826"/>
+    <text x="188" y="218" text-anchor="middle" fill="#9ee7d8" font-family="Arial, sans-serif" font-size="34" font-weight="800">
+      SQL
+    </text>
+    <path d="M202 258l18 18 44-54" fill="none" stroke="#fbbf24" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
 </svg>
