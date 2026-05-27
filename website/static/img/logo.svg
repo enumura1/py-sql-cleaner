@@ -1,6 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
   <title id="title">py-sql-cleaner logo</title>
-  <rect width="64" height="64" rx="12" fill="#3654b8"/>
-  <path d="M17 18h30v7H25v6h18v7H25v8h22v7H17z" fill="#fff"/>
-  <path d="M40 11l11 11-11 11v-8H29v-6h11z" fill="#9ee7d8"/>
+  <defs>
+    <linearGradient id="logo-bg" x1="8" y1="7" x2="58" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1d4ed8"/>
+      <stop offset="0.58" stop-color="#0f766e"/>
+      <stop offset="1" stop-color="#115e59"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#logo-bg)"/>
+  <path d="M13 10h27l11 11v33H13z" fill="#f8fafc"/>
+  <path d="M40 10v11h11z" fill="#c7ede6"/>
+  <path d="M19 20h13M19 26h21M19 32h16" stroke="#7aa6b0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M19 38h9M19 44h16" stroke="#0f766e" stroke-width="3" stroke-linecap="round"/>
+  <rect x="29" y="36" width="20" height="13" rx="3" fill="#101826"/>
+  <text x="39" y="45" text-anchor="middle" fill="#9ee7d8" font-family="Arial, sans-serif" font-size="8" font-weight="800">
+    SQL
+  </text>
+  <path d="M43 52l3 3 7-8" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
