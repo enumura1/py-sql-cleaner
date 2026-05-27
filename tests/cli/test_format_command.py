@@ -274,6 +274,21 @@ select * from users where id = :user_id
     assert "reason=placeholder" in result.output
 
 
+def test_format_skips_python_format_field_sql(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    original = '''query = """
+select * from users where id = {user_id}
+""".format(user_id=user_id)
+'''
+    file.write_text(original, encoding="utf-8")
+
+    result = runner.invoke(app, ["format", str(file)])
+
+    assert result.exit_code == 0, result.output
+    assert file.read_text(encoding="utf-8") == original
+    assert "reason=placeholder" in result.output
+
+
 def test_format_include_unsafe_still_skips_placeholder_sql(tmp_path) -> None:
     file = tmp_path / "foo.py"
     original = '''query = """

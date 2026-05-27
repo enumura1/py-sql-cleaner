@@ -11,5 +11,6 @@ if [ -f website/package.json ]; then
 fi
 
 rm -rf dist
+mkdir -p dist
 .venv/bin/python -m build
 .venv/bin/python -m twine check dist/*

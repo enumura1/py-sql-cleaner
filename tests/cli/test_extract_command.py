@@ -219,3 +219,54 @@ select * from users where id = :user_id
     assert file.read_text(encoding="utf-8") == original
     assert not (tmp_path / "sql").exists()
     assert "reason=placeholder" in result.output
+
+
+def test_extract_skips_python_format_field_sql(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    original = '''query = """
+select * from users where id = {user_id}
+""".format(user_id=user_id)
+'''
+    file.write_text(original, encoding="utf-8")
+
+    result = runner.invoke(app, ["extract", str(file), "--out-dir", "sql"])
+
+    assert result.exit_code == 0, result.output
+    assert file.read_text(encoding="utf-8") == original
+    assert not (tmp_path / "sql").exists()
+    assert "reason=placeholder" in result.output
+
+
+def test_extract_rejects_name_paths(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    file.write_text(
+        '''query = """
+select * from users
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["extract", str(file), "--out-dir", "sql", "--name", "../query"])
+
+    assert result.exit_code == 1
+    assert "--name must be a file name" in result.output
+    assert not (tmp_path / "query.sql").exists()
+    assert not (tmp_path / "sql").exists()
+
+
+def test_extract_rejects_windows_name_paths(tmp_path) -> None:
+    file = tmp_path / "foo.py"
+    file.write_text(
+        '''query = """
+select * from users
+"""
+''',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["extract", str(file), "--out-dir", "sql", "--name", r"sql\query"])
+
+    assert result.exit_code == 1
+    assert "--name must be a file name" in result.output
+    assert not (tmp_path / "sql").exists()
