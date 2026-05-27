@@ -72,7 +72,16 @@ def format_command(
     backend: Annotated[str, typer.Option()] = DEFAULT_BACKEND,
     write: Annotated[bool, typer.Option("--write/--check")] = True,
     dry_run: Annotated[bool, typer.Option("--dry-run")] = False,
-    include_unsafe: Annotated[bool, typer.Option("--include-unsafe")] = False,
+    include_unsafe: Annotated[
+        bool,
+        typer.Option(
+            "--include-unsafe",
+            help=(
+                "Reserved for future unsafe categories. "
+                "F-strings, Jinja-like templates, and runtime placeholders are always skipped."
+            ),
+        ),
+    ] = False,
 ) -> None:
     _validate_formatter_options(dialect, backend)
     source = file.read_text(encoding="utf-8")

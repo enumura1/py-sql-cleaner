@@ -52,6 +52,7 @@ NAMED_PLACEHOLDER_RE = re.compile(r"(?<!:):[A-Za-z_][A-Za-z0-9_]*")
 NUMERIC_PLACEHOLDER_RE = re.compile(r"(?<!:):[0-9]+")
 PYFORMAT_PLACEHOLDER_RE = re.compile(r"%\([A-Za-z_][A-Za-z0-9_]*\)s")
 FORMAT_PLACEHOLDER_RE = re.compile(r"(?<!%)%s")
+PYTHON_FORMAT_FIELD_RE = re.compile(r"(?<!\{)\{(?!\{)[^{}\n]*\}(?!\})")
 
 
 def detect_sql_blocks(file_path: Path, source: str) -> list[SqlBlock]:
@@ -138,6 +139,7 @@ def has_runtime_placeholder(sql: str) -> bool:
         for pattern in (
             PYFORMAT_PLACEHOLDER_RE,
             FORMAT_PLACEHOLDER_RE,
+            PYTHON_FORMAT_FIELD_RE,
             NAMED_PLACEHOLDER_RE,
             NUMERIC_PLACEHOLDER_RE,
         )

@@ -89,6 +89,27 @@ select * from users where id = %(user_id)s
     assert blocks[0].has_placeholder is True
 
 
+def test_marks_python_format_fields_as_runtime_placeholders() -> None:
+    source = '''query = """
+select * from users where id = {user_id}
+"""
+'''
+
+    blocks = detect_sql_blocks(Path("foo.py"), source)
+
+    assert len(blocks) == 1
+    assert blocks[0].has_placeholder is True
+
+
+def test_placeholder_detection_ignores_escaped_python_format_braces() -> None:
+    sql = """
+select '{{ literal }}' as value
+from events
+"""
+
+    assert has_runtime_placeholder(sql) is False
+
+
 def test_placeholder_detection_ignores_literals_comments_and_postgres_casts() -> None:
     sql = """
 select created_at::date as day, ':literal' as value

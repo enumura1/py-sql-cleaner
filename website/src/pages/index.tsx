@@ -6,13 +6,14 @@ import styles from './index.module.css';
 
 type CodeLanguage = 'python' | 'sql';
 
-const heroBefore = `query = """
+const heroBefore = `paid_users_query = """
 select user_id, sum(amount)
 from analytics.orders
 where status='paid'
+group by user_id
 """`;
 
-const heroPythonAfter = `query = "sql/paid_users.sql"`;
+const heroPythonAfter = `paid_users_query = "sql/paid_users.sql"`;
 
 const heroSqlAfter = `SELECT
   user_id,
@@ -103,13 +104,17 @@ function highlightPythonLine(line: string, inSqlString: boolean) {
 
   return tokenize(
     line,
-    /#.*$|"""|"[^"]*"|'[^']*'|\b(users_query|sessions_query|query)\b|[=()]/g,
+    /#.*$|"""|"[^"]*"|'[^']*'|\b(paid_users_query|load_users_query|users_query|sessions_query|query)\b|[=()]/g,
     (token) => {
       if (token.startsWith('#')) return styles.codeComment;
       if (token === '"""' || token.startsWith('"') || token.startsWith("'")) {
         return styles.codeString;
       }
-      if (['query', 'users_query', 'sessions_query'].includes(token)) {
+      if (
+        ['query', 'paid_users_query', 'load_users_query', 'users_query', 'sessions_query'].includes(
+          token,
+        )
+      ) {
         return styles.codeVariable;
       }
       if (/^[=()]$/.test(token)) return styles.codeOperator;
@@ -274,9 +279,9 @@ function HomepageHeader() {
 const listRows = [
   {file: 'jobs/load_users.py:14', name: 'users_query', lines: '18 lines', status: 'safe'},
   {file: 'jobs/load_users.py:42', name: 'events_sql', lines: '24 lines', status: 'safe'},
-  {file: 'jobs/sessions.py:11', name: 'sessions_query', lines: '31 lines', status: 'skip', reason: 'f-string'},
-  {file: 'jobs/orders.py:67', name: 'orders_sql', lines: '12 lines', status: 'safe'},
-  {file: 'jobs/cohorts.py:29', name: 'cohort_query', lines: '44 lines', status: 'skip', reason: 'jinja'},
+  {file: 'jobs/load_users.py:76', name: 'sessions_query', lines: '31 lines', status: 'skip', reason: 'f-string'},
+  {file: 'jobs/load_users.py:118', name: 'orders_sql', lines: '12 lines', status: 'safe'},
+  {file: 'jobs/load_users.py:144', name: 'cohort_query', lines: '44 lines', status: 'skip', reason: 'jinja'},
 ];
 
 const findExample = `# jobs/load_users.py
@@ -284,7 +289,6 @@ users_query = """
 select user_id, email from analytics.users
 """
 
-# jobs/sessions.py
 sessions_query = f"""
 select * from sessions where ds = '{run_date}'
 """`;
@@ -320,7 +324,7 @@ LIMIT 50
 """`;
 
 const extractBefore = `# jobs/load_users.py
-query = """
+load_users_query = """
   select user_id, updated_at
   from analytics.users
   qualify row_number() over(
@@ -330,7 +334,7 @@ query = """
 """`;
 
 const extractPythonAfter = `# jobs/load_users.py
-query = "sql/load_users.sql"`;
+load_users_query = "sql/load_users.sql"`;
 
 const extractSqlAfter = `-- sql/load_users.sql
 SELECT
@@ -405,7 +409,7 @@ const introPoints = [
 function TerminalListPreview() {
   return (
     <div className={styles.terminalPreview}>
-      <PromptLine>py-sql-cleaner list jobs/</PromptLine>
+      <PromptLine>py-sql-cleaner list jobs/load_users.py</PromptLine>
       <div className={styles.resultTable} role="table" aria-label="py-sql-cleaner list output">
         {listRows.map((row) => (
           <div className={styles.resultRow} role="row" key={`${row.file}-${row.name}`}>
@@ -530,12 +534,12 @@ function FeatureList() {
       title: 'Find embedded SQL',
       summary: 'First, get a read-only inventory of SQL hidden in Python files.',
       body: 'Find triple-quoted strings that look like SQL, then separate safe blocks from dynamic templates before cleanup begins.',
-      command: 'py-sql-cleaner list jobs/',
+      command: 'py-sql-cleaner list jobs/load_users.py',
       previewLabel: 'Input Python and scan result',
       details: findDetails,
       preview: (
         <div className={styles.findPreview}>
-          <CodePane label="Example input" filename="jobs/*.py" language="python">
+          <CodePane label="Example input" filename="jobs/load_users.py" language="python">
             {findExample}
           </CodePane>
           <TerminalListPreview />

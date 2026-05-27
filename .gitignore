@@ -3,6 +3,7 @@ venv/
 node_modules/
 __pycache__/
 .pytest_cache/
+.import_linter_cache/
 *.py[cod]
 *$py.class
 *.egg-info/

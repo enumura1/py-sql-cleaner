@@ -57,7 +57,7 @@ def plan_extract(
             )
             continue
 
-        file_name = f"{name}.sql" if name else build_sql_file_name(block, source_file)
+        file_name = _validated_name(name) if name else build_sql_file_name(block, source_file)
         output_path = unique_planned_sql_path(output_dir, file_name, planned_paths)
         planned_paths.add(output_path)
 
@@ -74,7 +74,7 @@ def plan_extract(
 
     new_source = source
     for replacement in reversed(replacements):
-        reference = replacement.output_path.relative_to(source_file.parent).as_posix()
+        reference = _reference_path(replacement.output_path, source_file.parent)
         new_source = replace_sql_block_with_reference(
             new_source,
             replacement.block,
@@ -88,6 +88,19 @@ def plan_extract(
         replacements=replacements,
         warnings=warnings,
     )
+
+
+def _reference_path(output_path: Path, source_dir: Path) -> str:
+    try:
+        return output_path.relative_to(source_dir).as_posix()
+    except ValueError:
+        return output_path.as_posix()
+
+
+def _validated_name(name: str) -> str:
+    if not name or name in {".", ".."} or "\\" in name or Path(name).name != name:
+        raise ValueError("--name must be a file name, not a path.")
+    return name
 
 
 def unique_planned_sql_path(out_dir: Path, file_name: str, planned_paths: set[Path]) -> Path:

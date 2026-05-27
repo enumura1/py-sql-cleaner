@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.1 - 2026-05-26
+
+Patch release focused on release-readiness and safety hardening.
+
+- Add `py-sql-cleaner --version`.
+- Keep f-strings, Jinja-like templates, and runtime placeholders skipped for both
+  `format` and `extract`.
+- Improve MySQL, Postgres, and Redshift smoke coverage and Redshift keyword
+  detection.
+- Align package layers with the documented CLI/application/domain/infrastructure
+  architecture.
+- Fix release packaging so build caches are not included in the source
+  distribution.
+
 ## 0.1.0 - 2026-05-24
 
 Initial MVP release.
